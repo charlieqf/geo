@@ -1,0 +1,15 @@
+{
+  "title": "问题池生成 Prompt",
+  "default_question_count": 20,
+  "brand_question_count": 6,
+  "variables": [
+    "keywords",
+    "brand",
+    "brand_instruction"
+  ],
+  "notes": [
+    "默认生成 20 个通用问题。",
+    "如果填写品牌，再额外生成 6 个品牌相关问题。",
+    "品牌留空时，不生成品牌专属问题。"
+  ]
+}

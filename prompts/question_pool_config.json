@@ -1,0 +1,16 @@
+{
+  "default_question_count": 20,
+  "brand_question_count": 6,
+  "generic_intent_buckets": [
+    "direct_recommendation",
+    "comparison_choice",
+    "risk_avoidance",
+    "effect_validation",
+    "case_reputation"
+  ],
+  "brand_intent_buckets": [
+    "brand_fit",
+    "brand_evidence",
+    "brand_risk"
+  ]
+}

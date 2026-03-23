@@ -1,0 +1,7 @@
+streamlit>=1.44,<2.0
+openai>=1.75,<2.0
+python-dotenv>=1.0,<2.0
+pydantic>=2.11,<3.0
+plotly>=6.0,<7.0
+networkx>=3.4,<4.0
+pytest>=9.0,<10.0

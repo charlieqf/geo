@@ -1,0 +1,156 @@
+from __future__ import annotations
+
+
+APP_TITLE = "GEO 权重蒸馏机"
+
+PROMPT_NAME_LABELS = {
+    "question_pool_system": "问题池生成 · 系统提示词",
+    "question_pool_user": "问题池生成 · 用户模板",
+    "query_rewriter": "查询改写 · 用户模板",
+    "qwen_web_default": "豆包网页行为 · 默认回答",
+    "qwen_web_ranked_analysis": "豆包网页行为 · 分层盘点",
+    "qwen_web_source_emphasis": "豆包网页行为 · 来源增强",
+    "answer_structurer_system": "结构化预处理 · 系统提示词",
+    "answer_structurer_user": "结构化预处理 · 用户模板",
+    "topic_normalizer_system": "主题归一 · 系统提示词",
+    "topic_normalizer_user": "主题归一 · 用户模板",
+    "report_narrator_system": "结果解读 · 系统提示词",
+    "report_narrator_user": "结果解读 · 用户模板",
+}
+
+PROMPT_VARIANT_LABELS = {
+    "web_default": "默认回答",
+    "web_ranked_analysis": "分层盘点",
+    "web_source_emphasis": "来源增强",
+}
+
+
+HOME_PAGE = {
+    "page_title": APP_TITLE,
+    "hero_title": APP_TITLE,
+    "hero_subtitle": "面向豆包搜索问答的 GEO 平台发现与权重分析工作台。",
+    "kpi_target": "当前目标",
+    "kpi_model": "分析模型",
+    "kpi_runs": "实验记录",
+    "workflow_title": "使用流程",
+    "workflow_steps": [
+        "在“蒸馏问题生成”输入关键词并生成问题池。",
+        "在“运行蒸馏”选择问题池并调用豆包完成蒸馏。",
+        "在“结果分析”查看高价值平台、平台评分与黄金集合。",
+        "在“方法学说明”核对评分定义、过滤逻辑与局限性。",
+    ],
+    "advanced_settings_hint": "高级设置（提示词）只用于内部调参，不是普通用户的主流程入口。",
+    "latest_runs_title": "最近实验",
+    "no_runs": "暂无实验记录，请先运行一次实验。",
+    "top_platforms_prefix": "高价值平台：",
+}
+
+
+PROMPT_LAB_PAGE = {
+    "page_title": "高级设置（提示词）",
+    "selector_label": "选择提示词",
+    "heading": "高级设置（提示词）",
+    "caption": "这里用于内部调参、调试和 Prompt 对比实验。普通用户通常不需要进入这个页面。",
+    "editor_label": "提示词内容",
+    "save_button": "保存提示词",
+    "save_success": "已保存：{name}",
+}
+
+
+QUESTION_PAGE = {
+    "page_title": "蒸馏问题生成",
+    "heading": "蒸馏问题生成",
+    "keyword_label": "关键词",
+    "brand_label": "品牌（可选）",
+    "question_count_label": "问题数量",
+    "question_count_help": "默认 20 个通用问题；如果填写品牌，仍会额外生成 {brand_count} 个品牌相关问题。",
+    "draft_title": "已生成问题池",
+    "draft_empty": "还没有生成问题池，请先输入关键词并生成。",
+    "draft_count": "问题数量",
+    "submit_label": "生成问题池",
+    "spinner": "正在生成问题池，请稍候...",
+    "success": "问题池生成完成。",
+    "prompt_button": "查看问题池生成 Prompt",
+    "prompt_system_title": "系统提示词",
+    "prompt_user_title": "用户模板",
+    "prompt_meta_title": "Prompt 配置",
+}
+
+
+DISTILL_PAGE = {
+    "page_title": "运行蒸馏",
+    "heading": "运行蒸馏",
+    "draft_selector": "选择问题池",
+    "benchmark_file_label": "网页基准样本文本文件",
+    "benchmark_file_help": "可选。用于衡量输出结果与目标网页产品风格的相似度。",
+    "draft_preview": "问题池预览",
+    "empty_state": "暂无可用问题池，请先到“蒸馏问题生成”创建。",
+    "submit_label": "开始运行蒸馏",
+    "spinner": "正在调用豆包执行蒸馏，请稍候...",
+    "success": "蒸馏运行完成。",
+    "progress_title": "蒸馏进度",
+    "progress_summary": "已完成 {done}/{total} 个问题",
+    "view_answers": "查看回答",
+    "raw_answer_title": "回答原文",
+    "raw_answer_empty": "该问题尚未生成回答。",
+    "refresh_button": "刷新进度",
+    "cancel_button": "停止蒸馏",
+    "job_running": "后台任务正在运行。你可以切换到其他页面，回来后仍可恢复当前进度。",
+    "job_cancelling": "后台任务正在停止，请稍候...",
+    "job_cancelled": "后台蒸馏已停止。",
+    "job_completed": "后台蒸馏已完成。",
+    "job_error": "后台蒸馏失败。",
+    "job_log_title": "运行日志",
+    "job_log_empty": "当前还没有可显示的日志内容。",
+}
+
+
+RESULTS_PAGE = {
+    "page_title": "结果分析",
+    "heading": "结果分析",
+    "empty_state": "暂无实验结果，请先到“运行实验”执行一次实验。",
+    "run_selector": "选择实验",
+    "top_platforms_title": "高价值平台",
+    "top_domains_title": "原始来源域名",
+    "benchmark_title": "网页风格相似度",
+    "platform_scores_title": "平台评分",
+    "golden_set_title": "黄金集合",
+    "answer_trace_title": "回答与证据追踪",
+    "tab_overview": "总览",
+    "tab_scores": "评分详情",
+    "tab_trace": "回答追踪",
+    "metric_platforms": "平台候选数",
+    "metric_golden_set": "黄金集合数量",
+    "metric_best_platform": "当前最高分平台",
+    "metric_best_score": "最高综合得分",
+    "caption_actionable": "高价值平台：{value}",
+    "caption_urls": "链接：{value}",
+    "caption_domains": "域名：{value}",
+    "caption_structured": "语义解释：{interpretation} · 品牌可落地：{brand_grounded} · 来源显式度：{score}",
+    "trace_summary": "共 {question_count} 个问题，已生成 {answer_count} 条回答记录。按问题分组后，每题可展开查看不同回答变体。",
+    "trace_question_meta": "问题类型：{group} · 意图桶：{intent} · 回答变体数：{variant_count}",
+    "trace_rewritten": "改写后的提问：{value}",
+    "trace_answer_empty": "该问题暂时没有可追踪的回答记录。",
+    "trace_empty": "该回答尚未生成结构化分析。",
+}
+
+
+METHODOLOGY_PAGE = {
+    "page_title": "方法学说明",
+    "heading": "方法学说明",
+    "body": """
+**信息熵**：某个可投放信息平台相对当前平台集合带来的新增主题覆盖，并经过稳定性校正。
+
+**相关性**：某个可投放信息平台与其他独立平台在同一主题上的互证强度，并经过稳定性校正。
+
+**可投放信息平台**：客户可以真实运营内容的平台，如知乎、小红书、公众号、新闻媒体、论坛、博客/专栏和自有品牌阵地。
+
+**证据来源**：回答中出现的任何来源线索。证据来源不会自动进入最终评分。
+
+本 Demo 明确区分：
+- 证据来源
+- 可投放信息平台
+
+这样可以避免云厂商、基础设施文档和无运营意义的页面污染最终平台推荐结果。
+""",
+}
