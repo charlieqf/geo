@@ -19,13 +19,13 @@ from src.services.distillation_job_service import (
     read_job_log_tail,
     start_distillation_job,
 )
-from src.ui_helpers import app_css, default_benchmark_path
+from src.ui_helpers import app_css
 from src.ui_copy import DISTILL_PAGE
 from src.ui_presenters import (
     build_initial_question_progress,
+    distillation_preview_height,
     question_status_glyph,
     question_status_label,
-    question_table_height,
 )
 
 
@@ -47,7 +47,7 @@ def render_question_progress_list(
     host, progress_rows: dict[str, dict[str, object]]
 ) -> None:
     ordered_rows = list(progress_rows.values())
-    with host.container(height=question_table_height(len(ordered_rows))):
+    with host.container(height=distillation_preview_height(len(ordered_rows))):
         for item in ordered_rows:
             group_label = (
                 "品牌相关" if item.get("question_group") == "brand_specific" else "通用"
@@ -125,74 +125,89 @@ else:
         if active_state
         else build_initial_question_progress(loaded_draft.get("questions", []))
     )
-    progress_counter = st.empty()
     progress_placeholder = st.empty()
+    done_count = sum(
+        1
+        for row in progress_rows.values()
+        if row.get("status") in {"completed", "error"}
+    )
 
-    top_left, top_right = st.columns([1, 1])
-    with top_left:
-        if st.button(DISTILL_PAGE["refresh_button"]):
+    st.markdown(f"#### {DISTILL_PAGE['draft_preview']}")
+    render_question_progress_list(progress_placeholder, progress_rows)
+
+    status_col, control_col = st.columns([1.25, 0.9], gap="large")
+    with status_col:
+        st.markdown(f"#### {DISTILL_PAGE['status_panel_title']}")
+        st.markdown(
+            f"<div class='geo-section-card'><strong>{DISTILL_PAGE['progress_title']}</strong><br/><span class='geo-muted'>{DISTILL_PAGE['progress_summary'].format(done=done_count, total=len(progress_rows))}</span></div>",
+            unsafe_allow_html=True,
+        )
+        if active_state:
+            status = active_state.get("status")
+            if status == "running":
+                st.info(DISTILL_PAGE["job_running"])
+            elif status == "cancelling":
+                st.warning(DISTILL_PAGE["job_cancelling"])
+            elif status == "completed":
+                st.success(DISTILL_PAGE["job_completed"])
+            elif status == "cancelled":
+                st.warning(DISTILL_PAGE["job_cancelled"])
+            elif status == "error":
+                st.error(DISTILL_PAGE["job_error"])
+                if active_state.get("error"):
+                    st.code(str(active_state.get("error")), language="text")
+        else:
+            st.info(DISTILL_PAGE["ready_hint"])
+
+    with control_col:
+        st.markdown(f"#### {DISTILL_PAGE['control_panel_title']}")
+        action_left, action_right = st.columns(2)
+        with action_left:
+            start_requested = st.button(
+                DISTILL_PAGE["submit_label"],
+                type="primary",
+                use_container_width=True,
+                disabled=bool(
+                    active_state
+                    and active_state.get("status") in {"running", "cancelling"}
+                ),
+            )
+        with action_right:
+            refresh_requested = st.button(
+                DISTILL_PAGE["refresh_button"],
+                use_container_width=True,
+            )
+
+        if refresh_requested:
             st.rerun()
-    with top_right:
-        if active_job_meta and active_state:
-            with st.popover(DISTILL_PAGE["job_log_title"]):
+
+        if active_job_meta and active_state and active_state.get("status") == "running":
+            if st.button(
+                DISTILL_PAGE["cancel_button"],
+                type="secondary",
+                use_container_width=True,
+            ):
+                state_path = job_state_path(config.runs_dir, str(active_job_id))
+                cancel_job(state_path)
+                st.rerun()
+
+        with st.expander(DISTILL_PAGE["job_log_title"], expanded=False):
+            if active_job_meta:
                 log_text = read_job_log_tail(Path(active_job_meta["log_path"]))
                 if log_text:
                     st.code(log_text, language="text")
                 else:
                     st.info(DISTILL_PAGE["job_log_empty"])
+            else:
+                st.info(DISTILL_PAGE["job_log_empty"])
 
-    if active_state:
-        status = active_state.get("status")
-        if status == "running":
-            st.info(DISTILL_PAGE["job_running"])
-            if st.button(DISTILL_PAGE["cancel_button"], type="secondary"):
-                state_path = job_state_path(config.runs_dir, str(active_job_id))
-                cancel_job(state_path)
-                st.rerun()
-        elif status == "cancelling":
-            st.warning(DISTILL_PAGE["job_cancelling"])
-        elif status == "completed":
-            st.success(DISTILL_PAGE["job_completed"])
-        elif status == "cancelled":
-            st.warning(DISTILL_PAGE["job_cancelled"])
-        elif status == "error":
-            st.error(DISTILL_PAGE["job_error"])
-            if active_state.get("error"):
-                st.code(str(active_state.get("error")), language="text")
-
-        done_count = sum(
-            1
-            for row in progress_rows.values()
-            if row.get("status") in {"completed", "error"}
-        )
-        progress_counter.markdown(
-            f"<div class='geo-section-card'><strong>{DISTILL_PAGE['progress_title']}</strong><br/><span class='geo-muted'>{DISTILL_PAGE['progress_summary'].format(done=done_count, total=len(progress_rows))}</span></div>",
-            unsafe_allow_html=True,
-        )
-
-    st.markdown(f"#### {DISTILL_PAGE['draft_preview']}")
-    render_question_progress_list(progress_placeholder, progress_rows)
-
-    with st.form("run-distillation"):
-        benchmark_file = st.text_input(
-            DISTILL_PAGE["benchmark_file_label"],
-            value=str(default_benchmark_path()),
-            help=DISTILL_PAGE["benchmark_file_help"],
-        )
-        submitted = st.form_submit_button(DISTILL_PAGE["submit_label"], type="primary")
-
-    if submitted:
-        benchmark_path = Path(benchmark_file)
-        benchmark_argument = (
-            benchmark_path if benchmark_file and benchmark_path.exists() else None
-        )
-
+    if start_requested:
         with st.spinner(DISTILL_PAGE["spinner"]):
             job_meta = start_distillation_job(
                 project_root=project_root,
                 runs_dir=config.runs_dir,
                 draft_path=Path(selected_draft["draft_path"]),
-                benchmark_path=benchmark_argument,
+                benchmark_path=None,
             )
 
         st.session_state["active_distillation_job_id"] = job_meta["job_id"]

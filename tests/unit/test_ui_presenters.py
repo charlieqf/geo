@@ -1,12 +1,15 @@
 from src.ui_presenters import (
     build_answer_trace_groups,
     build_initial_question_progress,
+    distillation_preview_height,
+    present_baseline_platforms,
     question_table_height,
     question_status_glyph,
     question_status_label,
     present_benchmark_summary,
     present_golden_set,
     present_interpretation_label,
+    present_niche_opportunities,
     present_platform_scores,
     present_topic_units,
 )
@@ -76,6 +79,57 @@ def test_present_golden_set_uses_chinese_columns() -> None:
     ]
 
 
+def test_present_niche_opportunities_uses_business_columns() -> None:
+    rows = present_niche_opportunities(
+        [
+            {
+                "platform": "IT之家",
+                "platform_family": "tech_media",
+                "size_tier": "niche",
+                "cost_tier": "medium",
+                "niche_opportunity_score": 1.12,
+                "why_it_matters": "覆盖垂直科技问答。",
+                "entry_path": "投稿或栏目合作。",
+            }
+        ]
+    )
+
+    assert rows == [
+        {
+            "平台": "IT之家",
+            "类型": "tech_media",
+            "规模": "niche",
+            "成本": "medium",
+            "机会分": 1.12,
+            "值得做": "覆盖垂直科技问答。",
+            "进入路径": "投稿或栏目合作。",
+        }
+    ]
+
+
+def test_present_baseline_platforms_uses_reference_columns() -> None:
+    rows = present_baseline_platforms(
+        [
+            {
+                "platform": "36氪",
+                "platform_family": "tech_media",
+                "final_score": 1.66,
+                "why_low_competition": "属于头部综合媒体，适合作为基线参考。",
+            }
+        ]
+    )
+
+    assert rows == [
+        {
+            "平台": "36氪",
+            "类型": "tech_media",
+            "综合得分": 1.66,
+            "角色": "头部基线平台",
+            "说明": "属于头部综合媒体，适合作为基线参考。",
+        }
+    ]
+
+
 def test_present_topic_units_uses_chinese_columns() -> None:
     rows = present_topic_units(
         [
@@ -103,6 +157,12 @@ def test_question_table_height_grows_with_row_count_and_caps() -> None:
     assert question_table_height(5) > 220
     assert question_table_height(26) == 760
     assert question_table_height(80) == 760
+
+
+def test_distillation_preview_height_prefers_taller_scroll_region() -> None:
+    assert distillation_preview_height(0) == 420
+    assert distillation_preview_height(8) > 700
+    assert distillation_preview_height(20) == 980
 
 
 def test_question_status_helpers_return_distinct_icons_and_labels() -> None:

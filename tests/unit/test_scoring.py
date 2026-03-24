@@ -181,3 +181,110 @@ def test_build_platform_analysis_uses_topic_rows_for_stability() -> None:
     )
 
     assert zhihu["stability_score"] < 1.0
+
+
+def test_build_platform_analysis_separates_baseline_and_niche_opportunities() -> None:
+    answers = [
+        {
+            "question_id": "q1",
+            "intent_bucket": "direct_recommendation",
+            "prompt_variant": "web_ranked_analysis",
+            "actionable_platforms": ["36氪"],
+            "structured_analysis": {
+                "topic_units": [
+                    {
+                        "topic_label": "行业趋势洞察",
+                        "confidence": 0.94,
+                        "evidence_span": "36氪适合做行业趋势洞察和头部曝光。",
+                    }
+                ]
+            },
+        },
+        {
+            "question_id": "q2",
+            "intent_bucket": "comparison_choice",
+            "prompt_variant": "web_source_emphasis",
+            "actionable_platforms": ["IT之家"],
+            "structured_analysis": {
+                "topic_units": [
+                    {
+                        "topic_label": "垂直科技口碑",
+                        "confidence": 0.92,
+                        "evidence_span": "IT之家更适合承接垂直科技口碑与长尾问题。",
+                    }
+                ]
+            },
+        },
+        {
+            "question_id": "q3",
+            "intent_bucket": "risk_avoidance",
+            "prompt_variant": "web_default",
+            "actionable_platforms": ["V2EX"],
+            "structured_analysis": {
+                "topic_units": [
+                    {
+                        "topic_label": "开发者真实反馈",
+                        "confidence": 0.89,
+                        "evidence_span": "V2EX适合发现真实反馈和低竞争问答切口。",
+                    }
+                ]
+            },
+        },
+    ]
+
+    analysis = build_platform_analysis(answers, target_coverage=0.85)
+
+    assert [row["platform"] for row in analysis["baseline_platforms"]] == ["36氪"]
+    assert [row["platform"] for row in analysis["niche_opportunities"]] == [
+        "IT之家",
+        "V2EX",
+    ]
+    assert all(row["size_tier"] != "head" for row in analysis["niche_opportunities"])
+    assert all(
+        row["niche_opportunity_score"] > 0 for row in analysis["niche_opportunities"]
+    )
+
+
+def test_build_platform_analysis_builds_niche_only_golden_set() -> None:
+    answers = [
+        {
+            "question_id": "q1",
+            "intent_bucket": "direct_recommendation",
+            "prompt_variant": "web_ranked_analysis",
+            "actionable_platforms": ["知乎", "豆瓣"],
+            "structured_analysis": {
+                "topic_units": [
+                    {
+                        "topic_label": "垂直讨论",
+                        "confidence": 0.92,
+                        "evidence_span": "豆瓣和知乎都可承接真实讨论。",
+                    }
+                ]
+            },
+        },
+        {
+            "question_id": "q2",
+            "intent_bucket": "comparison_choice",
+            "prompt_variant": "web_source_emphasis",
+            "actionable_platforms": ["36氪", "CSDN"],
+            "structured_analysis": {
+                "topic_units": [
+                    {
+                        "topic_label": "开发者实操",
+                        "confidence": 0.9,
+                        "evidence_span": "CSDN更适合承接开发者实操内容。",
+                    }
+                ]
+            },
+        },
+    ]
+
+    analysis = build_platform_analysis(answers, target_coverage=0.85)
+
+    assert [row["platform"] for row in analysis["niche_golden_set"]] == [
+        "豆瓣",
+        "CSDN",
+    ]
+    assert all(
+        row["platform"] not in {"知乎", "36氪"} for row in analysis["niche_golden_set"]
+    )

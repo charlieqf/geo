@@ -1,40 +1,6 @@
-# Progress Log
+# Progress
 
-- Session started.
-- Created planning files for document review.
-- Located candidate review documents: `1.idea.md` and `2.plan.md`.
-- Reviewed `1.idea.md` and `2.plan.md`; logged primary methodological and implementation risks.
-- Completed review and prepared user-facing conclusions.
-- Refined the review to focus specifically on technical feasibility for a demo build.
-- Logged deployment constraint: local Windows first, Ubuntu VM later.
-- Logged updated product constraints: no GPU, OpenAI-only, no heavy DB, no PDF, on-page methodology explanation required.
-- Updated architecture assumption: Qwen is the target model under test, while OpenAI is used only for downstream analysis.
-- Added prompt-system guidance: editable prompt templates and a two-stage structured-analysis pipeline.
-- Wrote the detailed implementation plan with prompt architecture, scoring logic, page design, task breakdown, and SQLite schema.
-- Updated `2.plan.md` to serve as the entry point to the detailed implementation plan.
-- Added a concrete visual-direction section based on the referenced warm editorial style, adapted for analytical dashboards.
-- Added a pre-development discovery run for the keyword `中国 GEO 服务` to validate question-pool prompts, Qwen response patterns, source extraction, and structured-analysis schema.
-- Implemented the first execution batch: project scaffolding, environment template, SQLite schema/init layer, and prompt registry with default prompt files.
-- Verified the first batch with `pytest`; config, DB, and prompt tests are green.
-- Implemented provider adapters, URL/domain extraction, and a reusable discovery script for Qwen experiments.
-- Completed an initial discovery run for `中国 GEO 服务` with 8 questions x 3 Qwen prompt variants and wrote findings to `docs/findings/2026-03-22-qwen-discovery-notes.md`.
-- Incorporated new benchmark evidence from `中国GEO（生成式引擎优化）服务商盘点.txt`, confirming that `chat.qwen.ai` web behavior differs materially from the raw API and should be treated as the primary optimization target.
-- Added a benchmark-guided prompt stack with query rewriting and source-enforced web-style Qwen prompt variants.
-- Reran discovery with the stronger source constraints; source extraction improved materially and `web_ranked_analysis` is now the strongest default candidate.
-- Clarified the core product requirement: final scoring should target actionable publishing platforms (知乎、小红书、新闻媒体、论坛等), not vendor/infrastructure source sites.
-- Added a candidate platform registry plus source-role classification so discovery can separate evidence sources from actionable publishing platforms.
-- Updated the schema and discovery pipeline to emit `source_label`, `source_role`, `normalized_platform`, and `is_actionable_platform`-style data.
-- Reran discovery with explicit actionable-platform guidance; the latest summary now surfaces platform-level candidates such as 知乎、小红书、微信公众号、论坛 and CSDN.
-- Added Doubao config placeholders and verified the Ark-compatible endpoint can list models.
-- Smoke-tested Doubao with `doubao-seed-2-0-pro-260215`; it returned source links and platform recommendations, while some other listed models were unavailable to the current account.
-- Fixed the project default Doubao model to `doubao-seed-2-0-pro-260215` in config and `.env.example`.
-- Scope changed: from this point forward, active testing and development target Doubao only; Qwen remains legacy context, not an active benchmark.
-- Implemented the structured answer preprocessing layer with schema validation and persistence for source-role and topic-unit data.
-- Added a minimal multi-page Streamlit app (`Home.py` + `pages/`) and confirmed it starts locally.
-- Installed runtime dependencies and verified the app boots at `http://localhost:8502` in a local smoke test.
-- Implemented platform scoring and greedy golden-set selection, then wired those outputs into discovery summaries and the Results page.
-- Added OpenAI-backed structured analysis to the Doubao discovery pipeline so runs now produce topic-level evidence for scoring.
-- Generated a fresh scored Doubao run under `runs/discovery-中国-GEO-服务-2026-03-22T06-09-05+00-00` and verified the local app boots with the full analysis stack.
-- Split the user flow into `蒸馏问题生成` and `运行蒸馏`, removed brand/region/question-count from the main distillation page, and demoted prompt editing to `高级设置（提示词）`.
-- Added question-pool config JSON plus brand-aware draft generation: 20 generic questions by default, with extra brand-specific questions only when the brand field is filled.
-- Relaunched the latest local UI at `http://localhost:8511` after the split-flow update.
+- Loaded `using-superpowers`, `doc-coauthoring`, `geo-fundamentals`, and `planning-with-files` skills.
+- Parsed both requested PDFs.
+- Pulled current GitHub repository summaries for the requested tools.
+- Next: synthesize into internal-doc-ready guidance focused on demo fit and integration horizon.

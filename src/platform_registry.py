@@ -15,6 +15,10 @@ class PlatformDefinition:
     is_actionable_platform: bool
     aliases: tuple[str, ...] = ()
     domains: tuple[str, ...] = ()
+    platform_family: str = ""
+    size_tier: str = "niche"
+    cost_tier: str = "medium"
+    actionability: str = "earned_media"
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,6 +62,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("知乎",),
         domains=("zhihu.com",),
+        platform_family="qa_community",
+        size_tier="head",
+        cost_tier="medium",
+        actionability="content_operation",
     ),
     PlatformDefinition(
         "小红书",
@@ -66,6 +74,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("小红书",),
         domains=("xiaohongshu.com",),
+        platform_family="lifestyle_community",
+        size_tier="head",
+        cost_tier="medium",
+        actionability="content_operation",
     ),
     PlatformDefinition(
         "微信公众号",
@@ -74,6 +86,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("微信公众号", "公众号", "微信公众平台"),
         domains=("mp.weixin.qq.com", "weixin.qq.com"),
+        platform_family="wechat_media",
+        size_tier="head",
+        cost_tier="medium",
+        actionability="content_operation",
     ),
     PlatformDefinition(
         "品牌官网",
@@ -82,6 +98,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("品牌官网",),
         domains=(),
+        platform_family="owned_media",
+        size_tier="owned",
+        cost_tier="low",
+        actionability="owned_media",
     ),
     PlatformDefinition(
         "36氪",
@@ -90,6 +110,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("36氪",),
         domains=("36kr.com",),
+        platform_family="tech_media",
+        size_tier="head",
+        cost_tier="high",
+        actionability="earned_media",
     ),
     PlatformDefinition(
         "虎嗅",
@@ -98,6 +122,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("虎嗅",),
         domains=("huxiu.com",),
+        platform_family="tech_media",
+        size_tier="head",
+        cost_tier="high",
+        actionability="earned_media",
     ),
     PlatformDefinition(
         "IT之家",
@@ -106,6 +134,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("IT之家",),
         domains=("ithome.com",),
+        platform_family="tech_media",
+        size_tier="niche",
+        cost_tier="medium",
+        actionability="earned_media",
     ),
     PlatformDefinition(
         "界面新闻",
@@ -114,6 +146,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("界面新闻",),
         domains=("jiemian.com",),
+        platform_family="news_media",
+        size_tier="head",
+        cost_tier="high",
+        actionability="earned_media",
     ),
     PlatformDefinition(
         "钛媒体",
@@ -122,6 +158,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("钛媒体",),
         domains=("tmtpost.com",),
+        platform_family="tech_media",
+        size_tier="head",
+        cost_tier="high",
+        actionability="earned_media",
     ),
     PlatformDefinition(
         "腾讯新闻",
@@ -130,6 +170,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("腾讯新闻",),
         domains=("xw.qq.com", "news.qq.com"),
+        platform_family="news_media",
+        size_tier="head",
+        cost_tier="high",
+        actionability="earned_media",
     ),
     PlatformDefinition(
         "搜狐科技",
@@ -138,6 +182,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("搜狐科技", "搜狐号"),
         domains=("sohu.com",),
+        platform_family="news_media",
+        size_tier="head",
+        cost_tier="high",
+        actionability="earned_media",
     ),
     PlatformDefinition(
         "网易科技",
@@ -146,6 +194,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("网易科技", "网易号"),
         domains=("163.com",),
+        platform_family="news_media",
+        size_tier="head",
+        cost_tier="high",
+        actionability="earned_media",
     ),
     PlatformDefinition(
         "百度百家号",
@@ -154,6 +206,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("百家号", "百度百家号"),
         domains=("baijiahao.baidu.com",),
+        platform_family="media_platform",
+        size_tier="established",
+        cost_tier="medium",
+        actionability="content_operation",
     ),
     PlatformDefinition(
         "今日头条",
@@ -162,6 +218,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("今日头条",),
         domains=("toutiao.com",),
+        platform_family="media_platform",
+        size_tier="established",
+        cost_tier="medium",
+        actionability="content_operation",
     ),
     PlatformDefinition(
         "Bilibili",
@@ -170,6 +230,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("B站", "哔哩哔哩", "Bilibili"),
         domains=("bilibili.com",),
+        platform_family="video_community",
+        size_tier="established",
+        cost_tier="medium",
+        actionability="content_operation",
     ),
     PlatformDefinition(
         "CSDN",
@@ -178,6 +242,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("CSDN",),
         domains=("csdn.net",),
+        platform_family="developer_community",
+        size_tier="niche",
+        cost_tier="low",
+        actionability="community_participation",
     ),
     PlatformDefinition(
         "SegmentFault",
@@ -186,6 +254,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("SegmentFault",),
         domains=("segmentfault.com",),
+        platform_family="developer_community",
+        size_tier="niche",
+        cost_tier="low",
+        actionability="community_participation",
     ),
     PlatformDefinition(
         "少数派",
@@ -194,6 +266,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("少数派",),
         domains=("sspai.com",),
+        platform_family="blog_media",
+        size_tier="niche",
+        cost_tier="medium",
+        actionability="earned_media",
     ),
     PlatformDefinition(
         "豆瓣",
@@ -202,6 +278,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("豆瓣",),
         domains=("douban.com",),
+        platform_family="community",
+        size_tier="niche",
+        cost_tier="low",
+        actionability="community_participation",
     ),
     PlatformDefinition(
         "百度贴吧",
@@ -210,6 +290,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("百度贴吧", "贴吧"),
         domains=("tieba.baidu.com",),
+        platform_family="forum",
+        size_tier="niche",
+        cost_tier="low",
+        actionability="community_participation",
     ),
     PlatformDefinition(
         "V2EX",
@@ -218,6 +302,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("V2EX",),
         domains=("v2ex.com",),
+        platform_family="forum",
+        size_tier="niche",
+        cost_tier="low",
+        actionability="community_participation",
     ),
     PlatformDefinition(
         "博客/专栏",
@@ -226,6 +314,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("博客", "专栏", "独立博客"),
         domains=(),
+        platform_family="blog_media",
+        size_tier="niche",
+        cost_tier="low",
+        actionability="owned_media",
     ),
     PlatformDefinition(
         "论坛",
@@ -234,6 +326,10 @@ PUBLISH_PLATFORM_DEFINITIONS: tuple[PlatformDefinition, ...] = (
         True,
         aliases=("论坛", "垂直社区", "行业论坛"),
         domains=(),
+        platform_family="forum",
+        size_tier="niche",
+        cost_tier="low",
+        actionability="community_participation",
     ),
 )
 
@@ -296,6 +392,12 @@ def build_platform_index() -> PlatformIndex:
         for domain in definition.domains:
             by_domain[domain] = definition
     return PlatformIndex(by_name=by_name, by_domain=by_domain)
+
+
+def get_platform_definition(name: str) -> PlatformDefinition | None:
+    if not name:
+        return None
+    return build_platform_index().by_name.get(name)
 
 
 def _match_by_domain(domain: str | None) -> PlatformDefinition | None:

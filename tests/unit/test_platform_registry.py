@@ -2,6 +2,7 @@ from src.platform_registry import (
     build_platform_index,
     classify_source_signal,
     extract_platform_mentions,
+    get_platform_definition,
 )
 
 
@@ -69,3 +70,15 @@ def test_extract_platform_mentions_skips_ambiguous_official_site_aliases() -> No
     mentions = extract_platform_mentions("可参考新榜官网和珍岛集团官网的服务介绍页。")
 
     assert "品牌官网" not in mentions
+
+
+def test_platform_metadata_distinguishes_head_and_niche_platforms() -> None:
+    kr = get_platform_definition("36氪")
+    ithome = get_platform_definition("IT之家")
+
+    assert kr is not None
+    assert ithome is not None
+    assert kr.size_tier == "head"
+    assert kr.cost_tier == "high"
+    assert ithome.size_tier == "niche"
+    assert ithome.actionability == "earned_media"

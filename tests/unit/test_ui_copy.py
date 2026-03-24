@@ -24,6 +24,11 @@ def test_ui_copy_uses_chinese_field_labels() -> None:
     assert QUESTION_PAGE["brand_label"] == "品牌（可选）"
     assert QUESTION_PAGE["prompt_button"] == "查看问题池生成 Prompt"
     assert DISTILL_PAGE["draft_selector"] == "选择问题池"
-    assert RESULTS_PAGE["top_platforms_title"] == "高价值平台"
-    assert RESULTS_PAGE["golden_set_title"] == "黄金集合"
+    assert DISTILL_PAGE["draft_preview"] == "问题池预览"
+    assert DISTILL_PAGE["status_panel_title"] == "运行状态"
+    assert DISTILL_PAGE["control_panel_title"] == "运行控制"
+    assert "benchmark_file_label" not in DISTILL_PAGE
+    assert RESULTS_PAGE["niche_opportunities_title"] == "小平台机会榜"
+    assert RESULTS_PAGE["baseline_platforms_title"] == "头部基线平台"
+    assert RESULTS_PAGE["golden_set_title"] == "小平台黄金集合"
     assert HOME_PAGE["workflow_steps"][0] == "在“蒸馏问题生成”输入关键词并生成问题池。"

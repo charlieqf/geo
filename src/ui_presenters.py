@@ -37,6 +37,13 @@ def question_table_height(row_count: int) -> int:
     return min(max(estimated, 220), 760)
 
 
+def distillation_preview_height(row_count: int) -> int:
+    if row_count <= 0:
+        return 420
+    estimated = 360 + row_count * 48
+    return min(max(estimated, 420), 980)
+
+
 def question_status_glyph(status: str) -> str:
     return QUESTION_STATUS_GLYPHS.get(status, QUESTION_STATUS_GLYPHS["pending"])
 
@@ -156,6 +163,42 @@ def present_platform_scores(rows: list[dict[str, object]]) -> list[dict[str, obj
                 "相关性": row.get("correlation_score", 0),
                 "稳定性": row.get("stability_score", 0),
                 "综合得分": row.get("final_score", 0),
+            }
+        )
+    return presented
+
+
+def present_niche_opportunities(
+    rows: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    presented = []
+    for row in rows:
+        presented.append(
+            {
+                "平台": row.get("platform", ""),
+                "类型": row.get("platform_family", ""),
+                "规模": row.get("size_tier", ""),
+                "成本": row.get("cost_tier", ""),
+                "机会分": row.get("niche_opportunity_score", 0),
+                "值得做": row.get("why_it_matters", ""),
+                "进入路径": row.get("entry_path", ""),
+            }
+        )
+    return presented
+
+
+def present_baseline_platforms(
+    rows: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    presented = []
+    for row in rows:
+        presented.append(
+            {
+                "平台": row.get("platform", ""),
+                "类型": row.get("platform_family", ""),
+                "综合得分": row.get("final_score", 0),
+                "角色": "头部基线平台",
+                "说明": row.get("why_low_competition", ""),
             }
         )
     return presented

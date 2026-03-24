@@ -447,6 +447,9 @@ def run_discovery(
             "topic_weights": platform_analysis["topic_weights"],
             "platform_scores": platform_analysis["platform_scores"],
             "golden_set": platform_analysis["golden_set"],
+            "baseline_platforms": platform_analysis["baseline_platforms"],
+            "niche_opportunities": platform_analysis["niche_opportunities"],
+            "niche_golden_set": platform_analysis["niche_golden_set"],
         },
     )
 
@@ -475,5 +478,8 @@ def run_discovery(
         "topic_weights": platform_analysis["topic_weights"],
         "platform_scores": platform_analysis["platform_scores"],
         "golden_set": platform_analysis["golden_set"],
+        "baseline_platforms": platform_analysis["baseline_platforms"],
+        "niche_opportunities": platform_analysis["niche_opportunities"],
+        "niche_golden_set": platform_analysis["niche_golden_set"],
         "notes_path": str(notes_path),
     }

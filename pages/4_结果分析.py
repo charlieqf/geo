@@ -12,9 +12,11 @@ from src.ui_helpers import app_css
 from src.ui_copy import PROMPT_VARIANT_LABELS, RESULTS_PAGE
 from src.ui_presenters import (
     build_answer_trace_groups,
+    present_baseline_platforms,
     present_benchmark_summary,
     present_golden_set,
     present_interpretation_label,
+    present_niche_opportunities,
     present_platform_scores,
     present_topic_units,
 )
@@ -45,16 +47,19 @@ summary = artifacts.get("summary") or {}
 
 platform_scores = summary.get("platform_scores", [])
 golden_set = summary.get("golden_set", [])
-best_platform = platform_scores[0]["platform"] if platform_scores else "暂无"
-best_score = platform_scores[0]["final_score"] if platform_scores else 0
+niche_opportunities = summary.get("niche_opportunities", [])
+baseline_platforms = summary.get("baseline_platforms", [])
+niche_golden_set = summary.get("niche_golden_set", [])
+best_platform = niche_opportunities[0]["platform"] if niche_opportunities else "暂无"
+best_score = (
+    niche_opportunities[0]["niche_opportunity_score"] if niche_opportunities else 0
+)
 
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-kpi1.metric(
-    RESULTS_PAGE["metric_platforms"], len(selected_run["top_actionable_platforms"])
-)
-kpi2.metric(RESULTS_PAGE["metric_golden_set"], len(golden_set))
-kpi3.metric(RESULTS_PAGE["metric_best_platform"], best_platform)
-kpi4.metric(RESULTS_PAGE["metric_best_score"], best_score)
+kpi1.metric(RESULTS_PAGE["metric_niche_platforms"], len(niche_opportunities))
+kpi2.metric(RESULTS_PAGE["metric_baseline_platforms"], len(baseline_platforms))
+kpi3.metric(RESULTS_PAGE["metric_best_niche_platform"], best_platform)
+kpi4.metric(RESULTS_PAGE["metric_best_niche_score"], best_score)
 
 tab_overview, tab_scores, tab_trace = st.tabs(
     [
@@ -67,16 +72,24 @@ tab_overview, tab_scores, tab_trace = st.tabs(
 with tab_overview:
     left, right = st.columns(2)
     with left:
-        st.markdown(f"#### {RESULTS_PAGE['top_platforms_title']}")
+        st.markdown(f"#### {RESULTS_PAGE['niche_opportunities_title']}")
+        if niche_opportunities:
+            st.dataframe(
+                present_niche_opportunities(niche_opportunities),
+                width="stretch",
+                hide_index=True,
+            )
+        else:
+            st.info(RESULTS_PAGE["niche_empty"])
+    with right:
+        st.markdown(f"#### {RESULTS_PAGE['baseline_platforms_title']}")
         st.dataframe(
-            [
-                {"平台": platform, "出现次数": count}
-                for platform, count in selected_run["top_actionable_platforms"]
-            ],
+            present_baseline_platforms(baseline_platforms),
             width="stretch",
             hide_index=True,
         )
-    with right:
+    domain_col, benchmark_col = st.columns(2)
+    with domain_col:
         st.markdown(f"#### {RESULTS_PAGE['top_domains_title']}")
         st.dataframe(
             [
@@ -86,23 +99,34 @@ with tab_overview:
             width="stretch",
             hide_index=True,
         )
-    st.markdown(f"#### {RESULTS_PAGE['benchmark_title']}")
-    st.dataframe(
-        present_benchmark_summary(selected_run["benchmark_summary"]),
-        width="stretch",
-        hide_index=True,
-    )
+    with benchmark_col:
+        st.markdown(f"#### {RESULTS_PAGE['benchmark_title']}")
+        st.dataframe(
+            present_benchmark_summary(selected_run["benchmark_summary"]),
+            width="stretch",
+            hide_index=True,
+        )
 
 with tab_scores:
     score_left, score_right = st.columns([1.5, 1])
     with score_left:
         st.markdown(f"#### {RESULTS_PAGE['platform_scores_title']}")
         st.dataframe(
-            present_platform_scores(platform_scores), width="stretch", hide_index=True
+            present_niche_opportunities(niche_opportunities),
+            width="stretch",
+            hide_index=True,
         )
     with score_right:
         st.markdown(f"#### {RESULTS_PAGE['golden_set_title']}")
-        st.dataframe(present_golden_set(golden_set), width="stretch", hide_index=True)
+        st.dataframe(
+            present_golden_set(niche_golden_set), width="stretch", hide_index=True
+        )
+        st.markdown(f"#### {RESULTS_PAGE['baseline_scores_title']}")
+        st.dataframe(
+            present_baseline_platforms(baseline_platforms),
+            width="stretch",
+            hide_index=True,
+        )
 
 with tab_trace:
     questions = artifacts.get("questions") or []

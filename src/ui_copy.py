@@ -60,6 +60,8 @@ PROMPT_LAB_PAGE = {
 QUESTION_PAGE = {
     "page_title": "蒸馏问题生成",
     "heading": "蒸馏问题生成",
+    "generator_tab": "问题生成",
+    "prompt_tab": "生成 Prompt",
     "keyword_label": "关键词",
     "brand_label": "品牌（可选）",
     "question_count_label": "问题数量",
@@ -67,6 +69,7 @@ QUESTION_PAGE = {
     "draft_title": "已生成问题池",
     "draft_empty": "还没有生成问题池，请先输入关键词并生成。",
     "draft_count": "问题数量",
+    "draft_help": "默认展示最近一次生成的问题池，列表区域会尽量利用页面高度，方便连续浏览与校对。",
     "submit_label": "生成问题池",
     "spinner": "正在生成问题池，请稍候...",
     "success": "问题池生成完成。",
@@ -81,9 +84,10 @@ DISTILL_PAGE = {
     "page_title": "运行蒸馏",
     "heading": "运行蒸馏",
     "draft_selector": "选择问题池",
-    "benchmark_file_label": "网页基准样本文本文件",
-    "benchmark_file_help": "可选。用于衡量输出结果与目标网页产品风格的相似度。",
     "draft_preview": "问题池预览",
+    "status_panel_title": "运行状态",
+    "control_panel_title": "运行控制",
+    "ready_hint": "当前问题池已就绪，可以直接开始运行蒸馏。",
     "empty_state": "暂无可用问题池，请先到“蒸馏问题生成”创建。",
     "submit_label": "开始运行蒸馏",
     "spinner": "正在调用豆包执行蒸馏，请稍候...",
@@ -110,23 +114,27 @@ RESULTS_PAGE = {
     "heading": "结果分析",
     "empty_state": "暂无实验结果，请先到“运行实验”执行一次实验。",
     "run_selector": "选择实验",
+    "niche_opportunities_title": "小平台机会榜",
+    "baseline_platforms_title": "头部基线平台",
     "top_platforms_title": "高价值平台",
     "top_domains_title": "原始来源域名",
     "benchmark_title": "网页风格相似度",
-    "platform_scores_title": "平台评分",
-    "golden_set_title": "黄金集合",
+    "platform_scores_title": "小平台机会评分",
+    "golden_set_title": "小平台黄金集合",
+    "baseline_scores_title": "头部基线参考",
     "answer_trace_title": "回答与证据追踪",
     "tab_overview": "总览",
     "tab_scores": "评分详情",
     "tab_trace": "回答追踪",
-    "metric_platforms": "平台候选数",
-    "metric_golden_set": "黄金集合数量",
-    "metric_best_platform": "当前最高分平台",
-    "metric_best_score": "最高综合得分",
+    "metric_niche_platforms": "小平台候选数",
+    "metric_baseline_platforms": "头部基线平台数",
+    "metric_best_niche_platform": "当前最佳小平台",
+    "metric_best_niche_score": "最佳机会分",
     "caption_actionable": "高价值平台：{value}",
     "caption_urls": "链接：{value}",
     "caption_domains": "域名：{value}",
     "caption_structured": "语义解释：{interpretation} · 品牌可落地：{brand_grounded} · 来源显式度：{score}",
+    "niche_empty": "当前结果里还没有足够明确的小平台机会。可通过更偏垂直、低竞争的问题池重跑一次。",
     "trace_summary": "共 {question_count} 个问题，已生成 {answer_count} 条回答记录。按问题分组后，每题可展开查看不同回答变体。",
     "trace_question_meta": "问题类型：{group} · 意图桶：{intent} · 回答变体数：{variant_count}",
     "trace_rewritten": "改写后的提问：{value}",
@@ -147,7 +155,7 @@ METHODOLOGY_PAGE = {
 
 **证据来源**：回答中出现的任何来源线索。证据来源不会自动进入最终评分。
 
-本 Demo 明确区分：
+本系统明确区分：
 - 证据来源
 - 可投放信息平台
 

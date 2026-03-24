@@ -26,10 +26,67 @@ def app_css() -> str:
         color: var(--ink);
       }
 
+      [data-testid="stToolbar"],
+      [data-testid="stMainMenu"],
+      [data-testid="stAppDeployButton"],
+      [data-testid="stHeaderActionElements"],
+      [data-testid="stStatusWidget"],
+      [data-testid="stDecoration"],
+      footer,
+      #MainMenu,
+      .viewerBadge_container__1QSob,
+      .viewerBadge_link__1S137,
+      .viewerBadge_text__1JaDK {
+        display: none;
+      }
+
+      [data-testid="stHeader"] {
+        height: 0;
+        min-height: 0;
+        background: transparent;
+      }
+
       .block-container {
         padding-top: 2rem;
         padding-bottom: 3rem;
         max-width: 1240px;
+      }
+
+      [data-testid="stTextInput"] [data-baseweb="base-input"],
+      [data-testid="stNumberInput"] [data-baseweb="base-input"] {
+        border: 2px solid rgba(139, 115, 85, 0.55);
+        border-radius: 14px;
+        background: rgba(255,255,255,0.94);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.75), 0 6px 16px rgba(44, 38, 32, 0.05);
+        transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+      }
+
+      [data-testid="stTextInput"] [data-baseweb="base-input"]:focus-within,
+      [data-testid="stNumberInput"] [data-baseweb="base-input"]:focus-within {
+        border-color: var(--accent-strong);
+        box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.14), 0 10px 22px rgba(44, 38, 32, 0.08);
+      }
+
+      [data-testid="stTextInput"] input,
+      [data-testid="stNumberInput"] input {
+        background: transparent;
+      }
+
+      [data-testid="stTabs"] [role="tablist"] {
+        gap: 0.35rem;
+      }
+
+      [data-testid="stTabs"] [role="tab"] {
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.7);
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      [data-testid="stTabs"] [aria-selected="true"] {
+        border-color: rgba(139, 115, 85, 0.55);
+        box-shadow: 0 6px 14px rgba(44, 38, 32, 0.06);
       }
 
       h1, h2, h3 {
@@ -112,6 +169,36 @@ def app_css() -> str:
         padding: 0.9rem 1rem;
         box-shadow: 0 10px 22px rgba(44, 38, 32, 0.05);
         margin-bottom: 0.75rem;
+      }
+
+      .geo-form-shell {
+        background: linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.74) 100%);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 1rem 1.1rem 0.35rem;
+        box-shadow: 0 12px 28px rgba(44, 38, 32, 0.06);
+        margin-bottom: 1rem;
+      }
+
+      .geo-question-list-shell {
+        height: calc(100vh - 23rem);
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 0.2rem;
+      }
+
+      .geo-question-list-shell::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      .geo-question-list-shell::-webkit-scrollbar-thumb {
+        background: rgba(139, 115, 85, 0.35);
+        border-radius: 999px;
+      }
+
+      .geo-question-list-shell::-webkit-scrollbar-track {
+        background: rgba(228, 223, 216, 0.35);
+        border-radius: 999px;
       }
 
       .geo-question-meta {

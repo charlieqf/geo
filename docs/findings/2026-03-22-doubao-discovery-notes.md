@@ -5,34 +5,32 @@
 
 ## Variant Summary
 
-- `web_default`: answers=8, with_urls=5, with_domains=8, with_source_labels=7, avg_web_benchmark_score=0.000
-- `web_ranked_analysis`: answers=8, with_urls=6, with_domains=6, with_source_labels=8, avg_web_benchmark_score=0.000
+- `web_default`: answers=8, with_urls=3, with_domains=5, with_source_labels=8, avg_web_benchmark_score=0.000
+- `web_ranked_analysis`: answers=8, with_urls=7, with_domains=7, with_source_labels=8, avg_web_benchmark_score=0.000
 - `web_source_emphasis`: answers=8, with_urls=1, with_domains=1, with_source_labels=8, avg_web_benchmark_score=0.000
 
 ## Top Domains
 
-- `newrank.cn`: 12
-- `seowhy.com`: 6
+- `newrank.cn`: 11
+- `71360.com`: 3
 - `gsdata.cn`: 3
-- `36kr.com`: 2
-- `business.zhihu.com`: 2
-- `chinaz.com`: 2
-- `pingwest.com`: 2
-- `accenture.cn`: 1
+- `.71360.com`: 1
+- `.newrank.cn`: 1
+- `analysys.cn`: 1
+- `baijingapp.com`: 1
 - `bluefocus.com`: 1
-- `cifnews.com`: 1
-- `gexiao.cn`: 1
-- `guoji.cc`: 1
-- `guoji.tech`: 1
-- `huitun.com`: 1
-- `iyiou.com`: 1
+- `chinaz.com`: 1
+- `developer.doubao.com`: 1
+- `geekbang.org`: 1
+- `heraldim.com`: 1
+- `iresearch.com.cn`: 1
+- `netconcepts.cn`: 1
+- `ogilvy.com.cn`: 1
 
 ## Top Actionable Platforms
 
-- `36氪`: 8
-- `知乎`: 2
-- `小红书`: 1
-- `钛媒体`: 1
+- `36氪`: 10
+- `钛媒体`: 2
 
 ## Initial Assessment
 
