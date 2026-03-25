@@ -7,6 +7,7 @@ from pathlib import Path
 import streamlit as st
 
 from src.config import load_config
+from src.services.platform_link_service import enrich_platform_rows_with_links
 from src.services.run_service import format_run_label, list_runs, load_run_artifacts
 from src.ui_helpers import app_css
 from src.ui_copy import PROMPT_VARIANT_LABELS, RESULTS_PAGE
@@ -28,6 +29,14 @@ st.markdown(app_css(), unsafe_allow_html=True)
 config = load_config()
 runs = list_runs(config.runs_dir)
 
+
+@st.cache_data(show_spinner=False, ttl=3600)
+def load_verified_platform_rows(
+    rows: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    return enrich_platform_rows_with_links(rows)
+
+
 st.markdown(f"### {RESULTS_PAGE['heading']}")
 if not runs:
     st.info(RESULTS_PAGE["empty_state"])
@@ -47,7 +56,9 @@ summary = artifacts.get("summary") or {}
 
 platform_scores = summary.get("platform_scores", [])
 golden_set = summary.get("golden_set", [])
-niche_opportunities = summary.get("niche_opportunities", [])
+niche_opportunities = load_verified_platform_rows(
+    summary.get("niche_opportunities", [])
+)
 baseline_platforms = summary.get("baseline_platforms", [])
 niche_golden_set = summary.get("niche_golden_set", [])
 best_platform = niche_opportunities[0]["platform"] if niche_opportunities else "暂无"
@@ -78,6 +89,9 @@ with tab_overview:
                 present_niche_opportunities(niche_opportunities),
                 width="stretch",
                 hide_index=True,
+                column_config={
+                    "网址": st.column_config.LinkColumn("网址"),
+                },
             )
         else:
             st.info(RESULTS_PAGE["niche_empty"])
@@ -112,7 +126,7 @@ with tab_scores:
     with score_left:
         st.markdown(f"#### {RESULTS_PAGE['platform_scores_title']}")
         st.dataframe(
-            present_niche_opportunities(niche_opportunities),
+            present_platform_scores(niche_opportunities),
             width="stretch",
             hide_index=True,
         )

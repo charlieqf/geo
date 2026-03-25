@@ -15,6 +15,29 @@ def test_platform_registry_contains_core_actionable_platforms() -> None:
     assert "微信公众号" in index.by_name
 
 
+def test_platform_registry_contains_new_niche_platforms_from_20q_review() -> None:
+    index = build_platform_index()
+
+    for platform in [
+        "站长之家",
+        "A5站长网",
+        "人人都是产品经理",
+        "数英网",
+        "鸟哥笔记",
+        "运营派",
+        "掘金",
+        "博客园",
+        "本地宝",
+        "19楼",
+        "西祠胡同",
+        "雨果网",
+        "白鲸出海",
+        "InfoQ",
+        "MarTech 中国",
+    ]:
+        assert platform in index.by_name
+
+
 def test_classify_source_signal_maps_publish_platforms_and_infrastructure() -> None:
     zhihu = classify_source_signal(domain="zhihu.com", source_label=None)
     tencent_cloud = classify_source_signal(
@@ -56,6 +79,61 @@ def test_classify_source_signal_matches_compound_media_labels() -> None:
     assert kr.matched_by == "label"
     assert tmt.normalized_platform == "钛媒体"
     assert tmt.matched_by == "label"
+
+
+def test_classify_source_signal_maps_new_niche_platform_domains() -> None:
+    assert (
+        classify_source_signal(
+            domain="chinaz.com", source_label=None
+        ).normalized_platform
+        == "站长之家"
+    )
+    assert (
+        classify_source_signal(
+            domain="admin5.com", source_label=None
+        ).normalized_platform
+        == "A5站长网"
+    )
+    assert (
+        classify_source_signal(
+            domain="woshipm.com", source_label=None
+        ).normalized_platform
+        == "人人都是产品经理"
+    )
+    assert (
+        classify_source_signal(
+            domain="digitaling.com", source_label=None
+        ).normalized_platform
+        == "数英网"
+    )
+    assert (
+        classify_source_signal(
+            domain="bendibao.com", source_label=None
+        ).normalized_platform
+        == "本地宝"
+    )
+    assert (
+        classify_source_signal(
+            domain="19lou.com", source_label=None
+        ).normalized_platform
+        == "19楼"
+    )
+    assert (
+        classify_source_signal(
+            domain="baijingapp.com", source_label=None
+        ).normalized_platform
+        == "白鲸出海"
+    )
+    assert (
+        classify_source_signal(domain="infoq.cn", source_label=None).normalized_platform
+        == "InfoQ"
+    )
+    assert (
+        classify_source_signal(
+            domain="martechchina.com", source_label=None
+        ).normalized_platform
+        == "MarTech 中国"
+    )
 
 
 def test_extract_platform_mentions_finds_actionable_platforms_in_prose() -> None:

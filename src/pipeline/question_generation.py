@@ -9,7 +9,7 @@ from src.prompt_registry import PromptRegistry
 from src.utils.time_utils import utc_now_iso
 
 
-DEFAULT_QUESTION_COUNT = 20
+DEFAULT_QUESTION_COUNT = 15
 DEFAULT_BRAND_QUESTION_COUNT = 6
 
 

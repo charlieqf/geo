@@ -1,5 +1,5 @@
 {
-  "default_question_count": 20,
+  "default_question_count": 15,
   "brand_question_count": 6,
   "generic_intent_buckets": [
     "direct_recommendation",

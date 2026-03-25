@@ -48,6 +48,7 @@ ACTIONABILITY_SCORES = {
 }
 
 NICHE_EXCLUDED_PLATFORMS = {"品牌官网", "论坛", "博客/专栏"}
+EVIDENCE_QUALITY_FLOOR = 0.35
 
 
 def _metadata_for_platform(platform: str) -> dict[str, str]:
@@ -108,7 +109,6 @@ def _iter_topic_rows(answer_records: list[dict[str, Any]]) -> list[dict[str, Any
     for answer in answer_records:
         structured = answer.get("structured_analysis") or {}
         topic_units = structured.get("topic_units") or []
-        platforms = answer.get("actionable_platforms") or []
         if not topic_units:
             continue
         for topic_unit in topic_units:
@@ -151,6 +151,82 @@ def _iter_topic_rows(answer_records: list[dict[str, Any]]) -> list[dict[str, Any
                 }
             )
     return rows
+
+
+def _answer_evidence_quality(answer: dict[str, Any]) -> float:
+    structured = answer.get("structured_analysis") or {}
+    noise_flags = structured.get("noise_flags") or {}
+
+    quality = 1.0
+    if bool(noise_flags.get("weak_evidence")):
+        quality -= 0.2
+    if bool(noise_flags.get("generic_listicle")):
+        quality -= 0.15
+    if answer.get("preprocess_error"):
+        quality -= 0.25
+
+    return round(max(EVIDENCE_QUALITY_FLOOR, quality), 4)
+
+
+def _collect_answer_platform_candidates(answer: dict[str, Any]) -> set[str]:
+    candidates: set[str] = set()
+    structured = answer.get("structured_analysis") or {}
+    topic_units = structured.get("topic_units") or []
+    for topic_unit in topic_units:
+        for supporting_domain in topic_unit.get("supporting_domains", []) or []:
+            classified = classify_source_signal(
+                domain=str(supporting_domain), source_label=None
+            )
+            if classified.is_actionable_platform and classified.normalized_platform:
+                candidates.add(classified.normalized_platform)
+
+        evidence_text = " ".join(
+            filter(
+                None,
+                [
+                    str(topic_unit.get("topic_label", "")),
+                    str(topic_unit.get("claim", "")),
+                    str(topic_unit.get("evidence_span", "")),
+                ],
+            )
+        )
+        for platform_name in extract_platform_mentions(evidence_text):
+            classified = classify_source_signal(domain=None, source_label=platform_name)
+            if classified.is_actionable_platform and classified.normalized_platform:
+                candidates.add(classified.normalized_platform)
+
+    if candidates or topic_units:
+        return candidates
+
+    candidates.update(
+        str(platform)
+        for platform in answer.get("actionable_platforms") or []
+        if str(platform).strip()
+    )
+
+    for platform_name in answer.get("platform_mentions") or []:
+        classified = classify_source_signal(
+            domain=None, source_label=str(platform_name)
+        )
+        if classified.is_actionable_platform and classified.normalized_platform:
+            candidates.add(classified.normalized_platform)
+
+    return candidates
+
+
+def _platform_evidence_quality(
+    answer_records: list[dict[str, Any]],
+) -> dict[str, float]:
+    scores: dict[str, list[float]] = defaultdict(list)
+    for answer in answer_records:
+        quality = _answer_evidence_quality(answer)
+        for platform in _collect_answer_platform_candidates(answer):
+            scores[platform].append(quality)
+
+    return {
+        platform: round(mean(platform_scores), 4)
+        for platform, platform_scores in scores.items()
+    }
 
 
 def _compute_topic_weights(topic_rows: list[dict[str, Any]]) -> dict[str, float]:
@@ -224,6 +300,7 @@ def build_platform_analysis(
     prompt_variants = _platform_prompt_variants(topic_rows)
     intents = _platform_intents(topic_rows)
     questions = _platform_questions(topic_rows)
+    evidence_quality_scores = _platform_evidence_quality(answer_records)
 
     total_prompt_variants = (
         len({str(answer.get("prompt_variant")) for answer in answer_records}) or 1
@@ -278,7 +355,12 @@ def build_platform_analysis(
         correlation_score = round(
             corroboration_strength * (0.7 + 0.3 * stability_score), 4
         )
-        final_score = round(0.6 * info_entropy_score + 0.4 * correlation_score, 4)
+        evidence_quality_score = evidence_quality_scores.get(platform, 1.0)
+        final_score = round(
+            (0.6 * info_entropy_score + 0.4 * correlation_score)
+            * evidence_quality_score,
+            4,
+        )
         specificity_score = SPECIFICITY_SCORES.get(metadata["platform_family"], 0.5)
         affordability_score = AFFORDABILITY_SCORES.get(metadata["cost_tier"], 0.5)
         actionability_score = ACTIONABILITY_SCORES.get(metadata["actionability"], 0.5)
@@ -308,6 +390,7 @@ def build_platform_analysis(
             "stability_score": stability_score,
             "info_entropy_score": info_entropy_score,
             "correlation_score": correlation_score,
+            "evidence_quality_score": evidence_quality_score,
             "final_score": final_score,
             "competition_penalty": competition_penalty,
             "niche_opportunity_score": niche_opportunity_score,

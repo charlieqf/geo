@@ -40,7 +40,9 @@ def test_present_platform_scores_uses_chinese_columns() -> None:
                 "info_entropy_score": 1.8,
                 "correlation_score": 0.9,
                 "stability_score": 0.8,
+                "evidence_quality_score": 0.65,
                 "final_score": 1.44,
+                "niche_opportunity_score": 0.72,
             }
         ]
     )
@@ -52,7 +54,9 @@ def test_present_platform_scores_uses_chinese_columns() -> None:
             "信息熵": 1.8,
             "相关性": 0.9,
             "稳定性": 0.8,
+            "证据质量": 0.65,
             "综合得分": 1.44,
+            "机会分": 0.72,
         }
     ]
 
@@ -90,6 +94,9 @@ def test_present_niche_opportunities_uses_business_columns() -> None:
                 "niche_opportunity_score": 1.12,
                 "why_it_matters": "覆盖垂直科技问答。",
                 "entry_path": "投稿或栏目合作。",
+                "official_url": "https://www.ithome.com",
+                "verified_url": "https://www.ithome.com/articles",
+                "url_verification": "可访问 (200)",
             }
         ]
     )
@@ -103,6 +110,8 @@ def test_present_niche_opportunities_uses_business_columns() -> None:
             "机会分": 1.12,
             "值得做": "覆盖垂直科技问答。",
             "进入路径": "投稿或栏目合作。",
+            "网址": "https://www.ithome.com/articles",
+            "链接校验": "可访问 (200)",
         }
     ]
 
@@ -198,7 +207,7 @@ def test_build_initial_question_progress_sets_pending_state() -> None:
             "question": "中国 GEO 服务哪家值得优先了解？",
             "status": "pending",
             "completed_variants": 0,
-            "total_variants": 3,
+            "total_variants": 2,
             "answers": [],
         }
     }

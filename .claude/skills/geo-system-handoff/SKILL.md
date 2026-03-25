@@ -14,6 +14,7 @@ Use this skill when you need to quickly resume work on this repository without r
 1. `README.md`
 2. `docs/methodology/03-system-methodology.md`
 3. `docs/handover/current-state.md`
+4. `docs/handover/2026-03-24-20q-run-review.md`
 
 ## Current Product Positioning
 
@@ -97,10 +98,14 @@ python -m py_compile pages/2_蒸馏问题生成.py pages/3_运行蒸馏.py pages
 
 ## Recommended Next Work
 
-1. Generate a new question pool explicitly optimized for small-platform discovery.
-2. Improve evidence grounding with `langextract`.
-3. Improve URL/domain hygiene with `tldextract` and `courlan`.
-4. Keep tightening the separation between head-platform baselines and niche opportunities.
+1. Follow `docs/handover/2026-03-24-20q-run-review.md` in order:
+   - expand `src/platform_registry.py`
+   - fix `actionable_platforms` generation in `src/pipeline/discovery_run.py`
+   - harden `src/utils/url_utils.py`
+   - wire weak-evidence penalties into `src/pipeline/scoring.py`
+2. Re-run the 20-question draft at `runs/question_drafts/draft-中国-GEO-服务-2026-03-24T21-40-52+00-00.json` after those fixes.
+3. Improve evidence grounding with `langextract`.
+4. Improve URL/domain hygiene further with `tldextract` and `courlan`.
 
 ## Handoff Rule
 

@@ -22,6 +22,7 @@ def test_ui_copy_is_fully_chinese_for_primary_navigation() -> None:
 def test_ui_copy_uses_chinese_field_labels() -> None:
     assert QUESTION_PAGE["keyword_label"] == "关键词"
     assert QUESTION_PAGE["brand_label"] == "品牌（可选）"
+    assert "15 个通用问题" in QUESTION_PAGE["question_count_help"]
     assert QUESTION_PAGE["prompt_button"] == "查看问题池生成 Prompt"
     assert DISTILL_PAGE["draft_selector"] == "选择问题池"
     assert DISTILL_PAGE["draft_preview"] == "问题池预览"

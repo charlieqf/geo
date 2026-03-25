@@ -1,4 +1,11 @@
-from src.pipeline.discovery_run import parse_question_pool_json, summarize_answer_batch
+from src.pipeline.discovery_run import (
+    DEFAULT_PROMPT_VARIANTS,
+    _collect_source_signal_artifacts,
+    _extract_promotable_platform_mentions,
+    parse_question_pool_json,
+    summarize_answer_batch,
+)
+from src.pipeline.platform_summary import summarize_actionable_platforms
 
 
 def test_parse_question_pool_json_returns_question_rows() -> None:
@@ -87,3 +94,37 @@ def test_summarize_answer_batch_counts_sources_by_variant() -> None:
     assert summary["natural"]["answers_with_source_labels"] == 1
     assert summary["source_seeking"]["answers_with_domains"] == 1
     assert summary["source_seeking"]["answers_with_source_labels"] == 1
+
+
+def test_collect_source_signal_artifacts_promotes_platform_mentions_to_actionable() -> (
+    None
+):
+    artifacts = _collect_source_signal_artifacts(
+        domains=["zhihu.com"],
+        source_labels=["知乎"],
+        platform_mentions=["站长之家", "雨果网"],
+    )
+
+    assert artifacts["actionable_platforms"] == ["知乎", "站长之家", "雨果网"]
+    assert summarize_actionable_platforms(artifacts["unique_platform_signals"]) == [
+        ("知乎", 1),
+        ("站长之家", 1),
+        ("雨果网", 1),
+    ]
+
+
+def test_extract_promotable_platform_mentions_skips_negative_baseline_references() -> (
+    None
+):
+    mentions = _extract_promotable_platform_mentions(
+        "知乎只作为基线参考，不建议当主阵地；更值得试的是站长之家和雨果网。"
+    )
+
+    assert mentions == ["站长之家", "雨果网"]
+
+
+def test_default_prompt_variants_use_two_high_signal_modes() -> None:
+    assert DEFAULT_PROMPT_VARIANTS == [
+        "qwen_web_ranked_analysis",
+        "qwen_web_source_emphasis",
+    ]

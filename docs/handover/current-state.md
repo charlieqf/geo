@@ -40,6 +40,13 @@
   - 下右：运行控制 + 运行日志
 - 问题池预览必须使用更高的专用高度函数 `distillation_preview_height()`，不要复用普通列表的 `question_table_height()`
 
+### 2.5 最新 20题小平台 run 结论
+
+- 最新已复核 run：`runs/discovery-中国-GEO-服务-2026-03-24T21-44-06+00-00`
+- 这一轮已经证明：新问题池确实能在回答正文里逼出更多具体小平台
+- 但系统下游抽取/归一化仍然明显低估了这些小平台，导致 `top_actionable_platforms` 仍偏头部平台
+- 详细复核文档见：`docs/handover/2026-03-24-20q-run-review.md`
+
 ## 3. 最重要的代码入口
 
 ### 页面
@@ -93,6 +100,7 @@ python -m py_compile pages/2_蒸馏问题生成.py pages/3_运行蒸馏.py pages
 ### 优先级高
 
 - 生成一套真正偏“小平台发现”的新问题池，不要继续沿用旧 8 题问题池
+- 按 `docs/handover/2026-03-24-20q-run-review.md` 的顺序修 4 个问题：平台注册表覆盖、actionable_platforms 生成逻辑、域名提取、弱证据降权
 - 把 `langextract`、`tldextract`、`courlan` 列为短期集成候选
 - 继续降低“抽象平台”如 `论坛`、`博客/专栏` 在中间层中的噪音影响
 

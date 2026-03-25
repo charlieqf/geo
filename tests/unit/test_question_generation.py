@@ -147,5 +147,5 @@ def test_generate_question_draft_skips_brand_specific_generation_when_brand_empt
 def test_load_question_generation_config_reads_json_file() -> None:
     config = load_question_generation_config(Path("prompts"))
 
-    assert config["default_question_count"] == 20
+    assert config["default_question_count"] == 15
     assert config["brand_question_count"] >= 1

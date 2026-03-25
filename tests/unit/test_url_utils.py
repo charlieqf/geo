@@ -65,3 +65,12 @@ def test_extract_domains_ignores_url_path_filenames() -> None:
     text = "清博智能GEO相关服务公开说明：https://www.gsdata.cn/product/custom.html"
 
     assert extract_domains(text) == ["gsdata.cn"]
+
+
+def test_extract_domains_ignores_standalone_html_path_fragments() -> None:
+    text = (
+        "抓到的脏路径包括 forum-123-1.html 和 weight.html，"
+        "但合法来源只有 https://www.gsdata.cn/product/custom.html 和 bendibao.com"
+    )
+
+    assert extract_domains(text) == ["gsdata.cn", "bendibao.com"]

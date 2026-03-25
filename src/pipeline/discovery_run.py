@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Callable
@@ -16,7 +17,11 @@ from src.pipeline.benchmark_evaluator import (
 )
 from src.pipeline.platform_summary import summarize_actionable_platforms
 from src.pipeline.scoring import build_platform_analysis
-from src.platform_registry import classify_source_signal, extract_platform_mentions
+from src.platform_registry import (
+    ClassifiedSourceSignal,
+    build_platform_index,
+    classify_source_signal,
+)
 from src.prompt_registry import PromptRegistry
 from src.providers.openai_client import OpenAIAnalysisClient
 from src.providers.qwen_client import QwenChatClient
@@ -33,10 +38,41 @@ DEFAULT_INTENT_BUCKETS = [
 ]
 
 DEFAULT_PROMPT_VARIANTS = [
-    "qwen_web_default",
     "qwen_web_ranked_analysis",
     "qwen_web_source_emphasis",
 ]
+NEGATIVE_MENTION_PREFIXES = (
+    "不建议",
+    "不推荐",
+    "不要",
+    "避免",
+    "排除",
+    "除外",
+    "不宜",
+    "不适合",
+    "不算",
+    "别在",
+)
+BASELINE_MENTION_PREFIXES = (
+    "作为基线",
+    "只作基线",
+    "仅作基线",
+    "作为参考",
+    "只作参考",
+    "仅作参考",
+    "作为对照",
+)
+COMPARATIVE_MENTION_PREFIXES = ("相比", "对比", "相较于", "相对于")
+POSITIVE_MENTION_NEARBY = (
+    "推荐",
+    "适合",
+    "值得",
+    "优先",
+    "可做",
+    "可试",
+    "机会",
+    "切口",
+)
 
 
 class DistillationCancelledError(RuntimeError):
@@ -108,6 +144,98 @@ def summarize_answer_batch(records: list[dict[str, Any]]) -> dict[str, dict[str,
         if record.get("source_labels"):
             variant_summary["answers_with_source_labels"] += 1
     return summary
+
+
+def _is_promotable_platform_match(text: str, start: int, end: int) -> bool:
+    before = text[max(0, start - 12) : start]
+    after = text[end : min(len(text), end + 12)]
+    nearby = before + after
+
+    if any(token in nearby for token in NEGATIVE_MENTION_PREFIXES):
+        return False
+    if any(token in before for token in COMPARATIVE_MENTION_PREFIXES):
+        return False
+    if any(token in nearby for token in BASELINE_MENTION_PREFIXES) and not any(
+        token in nearby for token in POSITIVE_MENTION_NEARBY
+    ):
+        return False
+    return True
+
+
+def _extract_promotable_platform_mentions(text: str) -> list[str]:
+    mentions: set[str] = set()
+    aliases = sorted(
+        build_platform_index().by_name.items(),
+        key=lambda item: len(item[0]),
+        reverse=True,
+    )
+    for alias, definition in aliases:
+        if not alias:
+            continue
+        for match in re.finditer(re.escape(alias), text, flags=re.IGNORECASE):
+            if _is_promotable_platform_match(text, match.start(), match.end()):
+                mentions.add(definition.display_name)
+                break
+    return sorted(mentions)
+
+
+def _build_classified_source_entry(
+    *, domain: str | None, source_label: str | None
+) -> dict[str, Any]:
+    return {
+        "domain": domain,
+        "source_label": source_label,
+        **asdict(classify_source_signal(domain=domain, source_label=source_label)),
+    }
+
+
+def _collect_source_signal_artifacts(
+    *,
+    domains: list[str],
+    source_labels: list[str],
+    platform_mentions: list[str],
+) -> dict[str, Any]:
+    classified_sources: list[dict[str, Any]] = []
+    candidate_sources: list[dict[str, Any]] = []
+
+    for domain in domains:
+        entry = _build_classified_source_entry(domain=domain, source_label=None)
+        classified_sources.append(entry)
+        candidate_sources.append(entry)
+
+    for source_label in source_labels:
+        entry = _build_classified_source_entry(domain=None, source_label=source_label)
+        classified_sources.append(entry)
+        candidate_sources.append(entry)
+
+    for platform_name in platform_mentions:
+        entry = _build_classified_source_entry(domain=None, source_label=platform_name)
+        classified_sources.append(entry)
+        candidate_sources.append(entry)
+
+    actionable_platforms = sorted(
+        {
+            item["normalized_platform"]
+            for item in candidate_sources
+            if item["is_actionable_platform"] and item["normalized_platform"]
+        }
+    )
+
+    unique_platform_signals: dict[str, ClassifiedSourceSignal] = {}
+    for item in candidate_sources:
+        key = (
+            item["normalized_platform"]
+            or f"unknown:{item['domain'] or item['source_label'] or 'none'}"
+        )
+        unique_platform_signals[key] = classify_source_signal(
+            domain=item["domain"], source_label=item["source_label"]
+        )
+
+    return {
+        "classified_sources": classified_sources,
+        "actionable_platforms": actionable_platforms,
+        "unique_platform_signals": list(unique_platform_signals.values()),
+    }
 
 
 def _write_json(path: Path, payload: Any) -> None:
@@ -239,43 +367,16 @@ def run_discovery(
                 urls = extract_urls(result["text"])
                 domains = extract_domains(result["text"])
                 source_labels = extract_source_labels(result["text"])
-                platform_mentions = extract_platform_mentions(result["text"])
-                classified_sources = []
-                explicit_classified_sources = []
-                for domain in domains:
-                    classified = {
-                        "domain": domain,
-                        "source_label": None,
-                        **asdict(
-                            classify_source_signal(domain=domain, source_label=None)
-                        ),
-                    }
-                    explicit_classified_sources.append(classified)
-                    classified_sources.append(classified)
-                for source_label in source_labels:
-                    classified = {
-                        "domain": None,
-                        "source_label": source_label,
-                        **asdict(
-                            classify_source_signal(
-                                domain=None, source_label=source_label
-                            )
-                        ),
-                    }
-                    explicit_classified_sources.append(classified)
-                    classified_sources.append(classified)
-                for platform_name in platform_mentions:
-                    classified_sources.append(
-                        {
-                            "domain": None,
-                            "source_label": platform_name,
-                            **asdict(
-                                classify_source_signal(
-                                    domain=None, source_label=platform_name
-                                )
-                            ),
-                        }
-                    )
+                platform_mentions = _extract_promotable_platform_mentions(
+                    result["text"]
+                )
+                source_signal_artifacts = _collect_source_signal_artifacts(
+                    domains=domains,
+                    source_labels=source_labels,
+                    platform_mentions=platform_mentions,
+                )
+                classified_sources = source_signal_artifacts["classified_sources"]
+                actionable_platforms = source_signal_artifacts["actionable_platforms"]
                 behavior_features = extract_behavior_features(result["text"])
                 benchmark_score = (
                     score_against_benchmark(behavior_features, benchmark_features)
@@ -284,24 +385,9 @@ def run_discovery(
                 )
                 for domain in domains:
                     domain_counts[domain] = domain_counts.get(domain, 0) + 1
-                actionable_platforms = sorted(
-                    {
-                        item["normalized_platform"]
-                        for item in explicit_classified_sources
-                        if item["is_actionable_platform"]
-                        and item["normalized_platform"]
-                    }
+                all_classified_signals.extend(
+                    source_signal_artifacts["unique_platform_signals"]
                 )
-                unique_platform_signals: dict[str, Any] = {}
-                for item in explicit_classified_sources:
-                    key = (
-                        item["normalized_platform"]
-                        or f"unknown:{item['domain'] or item['source_label'] or 'none'}"
-                    )
-                    unique_platform_signals[key] = classify_source_signal(
-                        domain=item["domain"], source_label=item["source_label"]
-                    )
-                all_classified_signals.extend(unique_platform_signals.values())
                 benchmark_scores_by_variant.setdefault(prompt_variant, []).append(
                     benchmark_score
                 )

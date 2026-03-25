@@ -53,6 +53,19 @@ SOURCE_LABEL_HINTS = (
     "盘点",
     "专题",
 )
+INVALID_DOMAIN_SUFFIXES = (
+    ".html",
+    ".htm",
+    ".shtml",
+    ".php",
+    ".asp",
+    ".aspx",
+    ".jsp",
+    ".json",
+    ".xml",
+    ".txt",
+    ".pdf",
+)
 
 
 def _clean_source_candidate(text: str) -> str:
@@ -104,6 +117,12 @@ def extract_urls(text: str) -> list[str]:
     return urls
 
 
+def _is_probable_domain(domain: str) -> bool:
+    if not domain or "/" in domain or "\\" in domain:
+        return False
+    return not domain.endswith(INVALID_DOMAIN_SUFFIXES)
+
+
 def normalize_domain(value: str) -> str | None:
     candidate = value.strip()
     if not candidate:
@@ -116,6 +135,8 @@ def normalize_domain(value: str) -> str | None:
     domain = domain.lower().split(":", maxsplit=1)[0]
     if domain.startswith("www."):
         domain = domain[4:]
+    if not _is_probable_domain(domain):
+        return None
     return domain or None
 
 

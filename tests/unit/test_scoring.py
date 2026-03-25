@@ -288,3 +288,161 @@ def test_build_platform_analysis_builds_niche_only_golden_set() -> None:
     assert all(
         row["platform"] not in {"知乎", "36氪"} for row in analysis["niche_golden_set"]
     )
+
+
+def test_build_platform_analysis_penalizes_weak_evidence_and_preprocess_errors() -> (
+    None
+):
+    answers = [
+        {
+            "question_id": "q1",
+            "intent_bucket": "direct_recommendation",
+            "prompt_variant": "web_ranked_analysis",
+            "actionable_platforms": ["CSDN"],
+            "platform_mentions": ["CSDN"],
+            "structured_analysis": {
+                "topic_units": [
+                    {
+                        "topic_label": "开发者口碑",
+                        "confidence": 0.92,
+                        "evidence_span": "CSDN适合承接开发者口碑和实操内容。",
+                    }
+                ],
+                "noise_flags": {
+                    "generic_listicle": False,
+                    "weak_evidence": False,
+                    "self_reference_only": False,
+                },
+            },
+            "preprocess_error": None,
+            "text": "CSDN适合承接开发者口碑和实操内容。",
+        },
+        {
+            "question_id": "q2",
+            "intent_bucket": "direct_recommendation",
+            "prompt_variant": "web_ranked_analysis",
+            "actionable_platforms": ["V2EX"],
+            "platform_mentions": ["V2EX"],
+            "structured_analysis": {
+                "topic_units": [
+                    {
+                        "topic_label": "开发者口碑",
+                        "confidence": 0.92,
+                        "evidence_span": "V2EX适合承接开发者口碑和实操内容。",
+                    }
+                ],
+                "noise_flags": {
+                    "generic_listicle": True,
+                    "weak_evidence": True,
+                    "self_reference_only": False,
+                },
+            },
+            "preprocess_error": None,
+            "text": "V2EX适合承接开发者口碑和实操内容。",
+        },
+        {
+            "question_id": "q3",
+            "intent_bucket": "direct_recommendation",
+            "prompt_variant": "web_ranked_analysis",
+            "actionable_platforms": ["豆瓣"],
+            "platform_mentions": ["豆瓣"],
+            "structured_analysis": {
+                "topic_units": [
+                    {
+                        "topic_label": "社区讨论",
+                        "confidence": 0.92,
+                        "evidence_span": "豆瓣适合承接社区讨论和长尾内容。",
+                    }
+                ],
+                "noise_flags": {
+                    "generic_listicle": False,
+                    "weak_evidence": False,
+                    "self_reference_only": False,
+                },
+            },
+            "preprocess_error": None,
+            "text": "豆瓣适合承接社区讨论和长尾内容。",
+        },
+        {
+            "question_id": "q4",
+            "intent_bucket": "effect_validation",
+            "prompt_variant": "web_default",
+            "actionable_platforms": ["豆瓣"],
+            "platform_mentions": ["豆瓣"],
+            "structured_analysis": None,
+            "preprocess_error": "Unterminated string",
+            "text": "豆瓣在这类问题里也被多次点名，但结构化失败。",
+        },
+    ]
+
+    analysis = build_platform_analysis(answers, target_coverage=0.85)
+
+    platform_scores = {row["platform"]: row for row in analysis["platform_scores"]}
+
+    assert platform_scores["CSDN"]["evidence_quality_score"] == 1.0
+    assert platform_scores["V2EX"]["evidence_quality_score"] < 1.0
+    assert platform_scores["豆瓣"]["evidence_quality_score"] < 1.0
+    assert (
+        platform_scores["CSDN"]["final_score"] > platform_scores["V2EX"]["final_score"]
+    )
+    assert (
+        platform_scores["CSDN"]["final_score"] > platform_scores["豆瓣"]["final_score"]
+    )
+
+
+def test_build_platform_analysis_does_not_penalize_incidental_platform_mentions() -> (
+    None
+):
+    answers = [
+        {
+            "question_id": "q1",
+            "intent_bucket": "direct_recommendation",
+            "prompt_variant": "web_ranked_analysis",
+            "actionable_platforms": ["CSDN"],
+            "platform_mentions": ["CSDN"],
+            "structured_analysis": {
+                "topic_units": [
+                    {
+                        "topic_label": "开发者实操",
+                        "confidence": 0.9,
+                        "evidence_span": "CSDN适合沉淀开发者实操内容。",
+                    }
+                ],
+                "noise_flags": {
+                    "generic_listicle": False,
+                    "weak_evidence": False,
+                    "self_reference_only": False,
+                },
+            },
+            "preprocess_error": None,
+        },
+        {
+            "question_id": "q2",
+            "intent_bucket": "comparison_choice",
+            "prompt_variant": "web_source_emphasis",
+            "actionable_platforms": ["CSDN", "V2EX"],
+            "platform_mentions": ["CSDN", "V2EX"],
+            "structured_analysis": {
+                "topic_units": [
+                    {
+                        "topic_label": "社区讨论",
+                        "confidence": 0.88,
+                        "evidence_span": "V2EX更适合承接社区讨论和问答切口。",
+                    }
+                ],
+                "noise_flags": {
+                    "generic_listicle": True,
+                    "weak_evidence": True,
+                    "self_reference_only": False,
+                },
+            },
+            "preprocess_error": None,
+        },
+    ]
+
+    analysis = build_platform_analysis(answers, target_coverage=0.85)
+
+    platform_scores = {row["platform"]: row for row in analysis["platform_scores"]}
+
+    assert platform_scores["CSDN"]["evidence_quality_score"] == 1.0
+    assert platform_scores["V2EX"]["evidence_quality_score"] < 1.0

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from src.pipeline.discovery_run import DEFAULT_PROMPT_VARIANTS
 from src.ui_copy import PROMPT_VARIANT_LABELS
 
 
@@ -65,7 +66,7 @@ def build_initial_question_progress(
             "question": question["question"],
             "status": "pending",
             "completed_variants": 0,
-            "total_variants": 3,
+            "total_variants": len(DEFAULT_PROMPT_VARIANTS),
             "answers": [],
         }
     return progress
@@ -162,7 +163,9 @@ def present_platform_scores(rows: list[dict[str, object]]) -> list[dict[str, obj
                 "信息熵": row.get("info_entropy_score", 0),
                 "相关性": row.get("correlation_score", 0),
                 "稳定性": row.get("stability_score", 0),
+                "证据质量": row.get("evidence_quality_score", 0),
                 "综合得分": row.get("final_score", 0),
+                "机会分": row.get("niche_opportunity_score", 0),
             }
         )
     return presented
@@ -182,6 +185,8 @@ def present_niche_opportunities(
                 "机会分": row.get("niche_opportunity_score", 0),
                 "值得做": row.get("why_it_matters", ""),
                 "进入路径": row.get("entry_path", ""),
+                "网址": row.get("verified_url") or row.get("official_url", ""),
+                "链接校验": row.get("url_verification", "未校验"),
             }
         )
     return presented

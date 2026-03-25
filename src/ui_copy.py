@@ -65,7 +65,7 @@ QUESTION_PAGE = {
     "keyword_label": "关键词",
     "brand_label": "品牌（可选）",
     "question_count_label": "问题数量",
-    "question_count_help": "默认 20 个通用问题；如果填写品牌，仍会额外生成 {brand_count} 个品牌相关问题。",
+    "question_count_help": "默认 15 个通用问题；如果填写品牌，仍会额外生成 {brand_count} 个品牌相关问题。",
     "draft_title": "已生成问题池",
     "draft_empty": "还没有生成问题池，请先输入关键词并生成。",
     "draft_count": "问题数量",
