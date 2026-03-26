@@ -23,7 +23,7 @@
 - `docs/handover/current-state.md`：当前系统状态、最近关键决策、接手建议
 - `docs/methodology/01-current-system-method.md`：当前系统方法梳理
 - `docs/methodology/02-advanced-methods-review.md`：先进方法与工具综述
-- `docs/methodology/03-system-methodology.md`：对外统一口径的方法学说明
+- `docs/methodology/03-system-methodology.md`：对外统一口径的方法学白皮书
 
 ## 本地技能
 

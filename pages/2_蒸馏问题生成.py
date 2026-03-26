@@ -12,7 +12,7 @@ from src.pipeline.question_generation import (
     load_question_generation_config,
 )
 from src.providers.openai_client import OpenAIAnalysisClient
-from src.services.draft_service import list_question_drafts
+from src.services.draft_service import format_draft_label, list_question_drafts
 from src.services.prompt_meta_service import load_prompt_meta
 from src.ui_helpers import app_css
 from src.ui_copy import QUESTION_PAGE
@@ -102,7 +102,15 @@ with generator_tab:
     if not drafts:
         st.info(QUESTION_PAGE["draft_empty"])
     else:
-        selected = drafts[0]
+        draft_map = {draft["draft_id"]: draft for draft in drafts}
+        selected_draft_id = st.selectbox(
+            QUESTION_PAGE["draft_selector"],
+            list(draft_map.keys()),
+            format_func=format_draft_label,
+        )
+        if selected_draft_id is None:
+            selected_draft_id = next(iter(draft_map))
+        selected = draft_map[selected_draft_id]
         st.markdown(
             f"<div class='geo-section-card'><strong>{selected['keyword']}</strong><br/><span class='geo-muted'>品牌：{selected.get('brand') or '未填写'} · {QUESTION_PAGE['draft_count']}：{selected['question_count']}</span></div>",
             unsafe_allow_html=True,

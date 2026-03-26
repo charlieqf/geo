@@ -41,8 +41,8 @@ def question_table_height(row_count: int) -> int:
 def distillation_preview_height(row_count: int) -> int:
     if row_count <= 0:
         return 420
-    estimated = 360 + row_count * 48
-    return min(max(estimated, 420), 980)
+    estimated = 200 + row_count * 72
+    return min(max(estimated, 420), 1400)
 
 
 def question_status_glyph(status: str) -> str:
@@ -222,6 +222,19 @@ def present_golden_set(rows: list[dict[str, object]]) -> list[dict[str, object]]
             }
         )
     return presented
+
+
+def present_golden_set_chart_rows(
+    rows: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    table_rows = present_golden_set(rows)
+    return [
+        {
+            "序号": index,
+            **row,
+        }
+        for index, row in enumerate(table_rows, start=1)
+    ]
 
 
 def present_topic_units(rows: list[dict[str, object]]) -> list[dict[str, object]]:

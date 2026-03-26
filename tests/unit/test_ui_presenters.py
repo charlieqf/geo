@@ -3,6 +3,7 @@ from src.ui_presenters import (
     build_initial_question_progress,
     distillation_preview_height,
     present_baseline_platforms,
+    present_golden_set_chart_rows,
     question_table_height,
     question_status_glyph,
     question_status_label,
@@ -80,6 +81,42 @@ def test_present_golden_set_uses_chinese_columns() -> None:
             "累计覆盖": 0.75,
             "新增主题": "问答覆盖、品牌解释",
         }
+    ]
+
+
+def test_present_golden_set_chart_rows_adds_display_order() -> None:
+    rows = present_golden_set_chart_rows(
+        [
+            {
+                "platform": "知乎",
+                "incremental_coverage": 0.75,
+                "cumulative_coverage": 0.75,
+                "new_topics": ["问答覆盖", "品牌解释"],
+            },
+            {
+                "platform": "小红书",
+                "incremental_coverage": 0.1,
+                "cumulative_coverage": 0.85,
+                "new_topics": ["生活方式"],
+            },
+        ]
+    )
+
+    assert rows == [
+        {
+            "序号": 1,
+            "平台": "知乎",
+            "新增覆盖": 0.75,
+            "累计覆盖": 0.75,
+            "新增主题": "问答覆盖、品牌解释",
+        },
+        {
+            "序号": 2,
+            "平台": "小红书",
+            "新增覆盖": 0.1,
+            "累计覆盖": 0.85,
+            "新增主题": "生活方式",
+        },
     ]
 
 
@@ -170,8 +207,8 @@ def test_question_table_height_grows_with_row_count_and_caps() -> None:
 
 def test_distillation_preview_height_prefers_taller_scroll_region() -> None:
     assert distillation_preview_height(0) == 420
-    assert distillation_preview_height(8) > 700
-    assert distillation_preview_height(20) == 980
+    assert distillation_preview_height(8) == 776
+    assert distillation_preview_height(20) == 1400
 
 
 def test_question_status_helpers_return_distinct_icons_and_labels() -> None:

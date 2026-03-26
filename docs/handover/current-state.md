@@ -23,6 +23,7 @@
 
 - `pages/5_方法学说明.py` 现在读取 `docs/methodology/03-system-methodology.md`
 - 页面和文档不再使用“Demo”措辞
+- 当前目标文风是“产品方法论白皮书”，而不是演示说明或内部 demo 讲解稿
 
 ### 2.3 问题生成页 UX 决策
 

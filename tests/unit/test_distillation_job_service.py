@@ -1,83 +1,62 @@
 import json
 from pathlib import Path
 
-from src.services.distillation_job_service import (
-    build_initial_job_state,
-    cancel_job,
-    load_job_state,
-    save_job_state,
-)
+from src.services.distillation_job_service import latest_job_meta_for_draft
 
 
-def test_build_initial_job_state_creates_pending_question_progress() -> None:
-    draft = {
-        "draft_id": "draft-1",
-        "keyword": "中国 GEO 服务",
-        "brand": "流量玩家",
-        "questions": [
+def _write_job(path: Path, *, draft_id: str, updated_at: str) -> None:
+    path.write_text(
+        json.dumps(
             {
-                "question_id": "Q001",
-                "question_group": "generic",
-                "intent_bucket": "direct_recommendation",
-                "question": "中国 GEO 服务哪家值得优先了解？",
-            }
-        ],
-    }
-
-    state = build_initial_job_state(job_id="job-1", draft=draft)
-
-    assert state["job_id"] == "job-1"
-    assert state["status"] == "running"
-    assert state["draft_id"] == "draft-1"
-    assert state["progress_rows"]["Q001"]["status"] == "pending"
+                "job_id": path.stem,
+                "draft_id": draft_id,
+                "updated_at": updated_at,
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
 
 
-def test_save_and_load_job_state_round_trip(tmp_path: Path) -> None:
-    state_path = tmp_path / "job.json"
-    payload = {
-        "job_id": "job-1",
-        "status": "running",
-        "progress_rows": {"Q001": {"status": "running"}},
-    }
+def test_latest_job_meta_for_draft_returns_most_recent_matching_job(
+    tmp_path: Path,
+) -> None:
+    jobs_dir = tmp_path / "jobs"
+    jobs_dir.mkdir(parents=True)
+    _write_job(
+        jobs_dir / "job-older.json",
+        draft_id="draft-a",
+        updated_at="2026-03-25T02:00:00+00:00",
+    )
+    _write_job(
+        jobs_dir / "job-newer.json",
+        draft_id="draft-a",
+        updated_at="2026-03-25T03:00:00+00:00",
+    )
 
-    save_job_state(state_path, payload)
-    loaded = load_job_state(state_path)
+    result = latest_job_meta_for_draft(tmp_path, "draft-a")
 
-    assert loaded == payload
-
-
-def test_cancel_job_marks_running_job_as_cancelling(tmp_path: Path) -> None:
-    state_path = tmp_path / "job.json"
-    payload = {
-        "job_id": "job-1",
-        "status": "running",
-        "cancel_requested": False,
-        "progress_rows": {"Q001": {"status": "running"}},
-    }
-    save_job_state(state_path, payload)
-
-    updated = cancel_job(state_path)
-
-    assert updated is not None
-    assert updated["status"] == "cancelling"
-    assert updated["cancel_requested"] is True
-    reloaded = load_job_state(state_path)
-    assert reloaded is not None
-    assert reloaded["status"] == "cancelling"
+    assert result is not None
+    assert result["job_id"] == "job-newer"
+    assert result["state_path"].endswith("job-newer.json")
+    assert result["log_path"].endswith("job-newer.log")
 
 
-def test_cancel_job_keeps_completed_job_unchanged(tmp_path: Path) -> None:
-    state_path = tmp_path / "job.json"
-    payload = {
-        "job_id": "job-1",
-        "status": "completed",
-        "cancel_requested": False,
-        "progress_rows": {},
-    }
-    save_job_state(state_path, payload)
+def test_latest_job_meta_for_draft_ignores_other_drafts(tmp_path: Path) -> None:
+    jobs_dir = tmp_path / "jobs"
+    jobs_dir.mkdir(parents=True)
+    _write_job(
+        jobs_dir / "job-a.json",
+        draft_id="draft-a",
+        updated_at="2026-03-25T02:00:00+00:00",
+    )
+    _write_job(
+        jobs_dir / "job-b.json",
+        draft_id="draft-b",
+        updated_at="2026-03-25T03:00:00+00:00",
+    )
 
-    updated = cancel_job(state_path)
+    result = latest_job_meta_for_draft(tmp_path, "draft-a")
 
-    assert updated is not None
-    assert updated["status"] == "completed"
-    assert updated["cancel_requested"] is False
+    assert result is not None
+    assert result["job_id"] == "job-a"

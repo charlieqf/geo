@@ -24,6 +24,12 @@ PROMPT_VARIANT_LABELS = {
     "web_source_emphasis": "来源增强",
 }
 
+PROMPT_VARIANT_EXPLANATIONS = {
+    "web_ranked_analysis": "分层盘点：更强调排序与分层结构，以及平台优先级判断。",
+    "web_source_emphasis": "来源增强：更强调来源显式度、证据暴露与后续抽取可用性。",
+    "web_default": "默认回答：保持常规回答风格，用于一般性对照。",
+}
+
 
 HOME_PAGE = {
     "page_title": APP_TITLE,
@@ -65,6 +71,7 @@ QUESTION_PAGE = {
     "keyword_label": "关键词",
     "brand_label": "品牌（可选）",
     "question_count_label": "问题数量",
+    "draft_selector": "选择问题池",
     "question_count_help": "默认 15 个通用问题；如果填写品牌，仍会额外生成 {brand_count} 个品牌相关问题。",
     "draft_title": "已生成问题池",
     "draft_empty": "还没有生成问题池，请先输入关键词并生成。",
@@ -130,6 +137,16 @@ RESULTS_PAGE = {
     "metric_baseline_platforms": "头部基线平台数",
     "metric_best_niche_platform": "当前最佳小平台",
     "metric_best_niche_score": "最佳机会分",
+    "score_metric_help": {
+        "信息熵": "含义：某个平台相对当前平台集合带来的新增主题信息量。口径：按 supporting_topics 及其 topic_weights 汇总。计算：基于平台覆盖主题的加权熵，并结合稳定性校正。参考意义：越高，说明这个平台带来的不是重复信息，而是新的覆盖价值。",
+        "相关性": "含义：某个平台与其他独立平台在同一主题上的互证强度。口径：按平台主题支持与总体 topic_weights 计算。计算：主题交集加权后再做稳定性校正。参考意义：越高，说明它不是孤证，而是被多个平台共同支撑。",
+        "稳定性": "含义：该平台在不同问题、不同意图、不同回答变体中的重复出现程度。口径：综合问题覆盖率、意图覆盖率和变体覆盖率。计算：三个覆盖率取均值。参考意义：越高，说明这个平台不是偶然被提到，而是更稳定的机会。",
+        "证据质量": "含义：该平台相关证据的可靠程度。口径：基于 weak_evidence、generic_listicle、preprocess_error 等标记。计算：从 1.0 起按噪音和失败情况降权。参考意义：越高，说明这条平台结论更值得信任。",
+        "综合得分": "含义：平台证据层面的基础分。口径：只反映信息量、相关性和证据质量，不直接表达业务优先级。计算：先做 0.6×信息熵 + 0.4×相关性，再乘以证据质量。参考意义：适合解释平台证据强弱。",
+        "机会分": "含义：面向业务决策的最终排序分。口径：在综合得分基础上，叠加平台垂直性、成本、进入路径等业务因素。计算：由 niche_opportunity_score 输出。参考意义：用于决定先做谁、后做谁。",
+    },
+    "golden_set_chart_title": "覆盖贡献趋势",
+    "golden_set_chart_caption": "柱状表示每个平台带来的新增覆盖，折线表示累计覆盖；用于判断平台组合的边际贡献与整体收敛速度。",
     "caption_actionable": "高价值平台：{value}",
     "caption_urls": "链接：{value}",
     "caption_domains": "域名：{value}",
@@ -138,6 +155,7 @@ RESULTS_PAGE = {
     "trace_summary": "共 {question_count} 个问题，已生成 {answer_count} 条回答记录。按问题分组后，每题可展开查看不同回答变体。",
     "trace_question_meta": "问题类型：{group} · 意图桶：{intent} · 回答变体数：{variant_count}",
     "trace_rewritten": "改写后的提问：{value}",
+    "trace_variant_explanation": "变体说明：{value}",
     "trace_answer_empty": "该问题暂时没有可追踪的回答记录。",
     "trace_empty": "该回答尚未生成结构化分析。",
 }

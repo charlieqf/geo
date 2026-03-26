@@ -49,6 +49,34 @@ def load_job_state(state_path: Path) -> dict[str, Any] | None:
     return json.loads(state_path.read_text(encoding="utf-8"))
 
 
+def latest_job_meta_for_draft(runs_dir: Path, draft_id: str) -> dict[str, str] | None:
+    jobs_dir = distillation_jobs_dir(runs_dir)
+    if not jobs_dir.exists():
+        return None
+
+    latest_payload: dict[str, Any] | None = None
+    latest_state_path: Path | None = None
+    for state_path in jobs_dir.glob("job-*.json"):
+        payload = load_job_state(state_path)
+        if not payload or payload.get("draft_id") != draft_id:
+            continue
+        if latest_payload is None or str(payload.get("updated_at", "")) > str(
+            latest_payload.get("updated_at", "")
+        ):
+            latest_payload = payload
+            latest_state_path = state_path
+
+    if latest_payload is None or latest_state_path is None:
+        return None
+
+    job_id = str(latest_payload.get("job_id") or latest_state_path.stem)
+    return {
+        "job_id": job_id,
+        "state_path": str(latest_state_path),
+        "log_path": str(jobs_dir / f"{job_id}.log"),
+    }
+
+
 def cancel_job(state_path: Path) -> dict[str, Any] | None:
     state = load_job_state(state_path)
     if not state:

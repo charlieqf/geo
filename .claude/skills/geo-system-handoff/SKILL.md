@@ -76,6 +76,7 @@ Use this skill when you need to quickly resume work on this repository without r
 
 - `pages/5_方法学说明.py` reads `docs/methodology/03-system-methodology.md`.
 - User-facing methodology content should not use “demo” wording.
+- The methodology page should read like a product methodology whitepaper, not a demo explanation.
 
 ## Critical Scoring Decisions
 

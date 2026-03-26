@@ -3,6 +3,7 @@ from src.ui_copy import (
     DISTILL_PAGE,
     HOME_PAGE,
     METHODOLOGY_PAGE,
+    PROMPT_VARIANT_EXPLANATIONS,
     PROMPT_LAB_PAGE,
     QUESTION_PAGE,
     RESULTS_PAGE,
@@ -22,6 +23,7 @@ def test_ui_copy_is_fully_chinese_for_primary_navigation() -> None:
 def test_ui_copy_uses_chinese_field_labels() -> None:
     assert QUESTION_PAGE["keyword_label"] == "关键词"
     assert QUESTION_PAGE["brand_label"] == "品牌（可选）"
+    assert QUESTION_PAGE["draft_selector"] == "选择问题池"
     assert "15 个通用问题" in QUESTION_PAGE["question_count_help"]
     assert QUESTION_PAGE["prompt_button"] == "查看问题池生成 Prompt"
     assert DISTILL_PAGE["draft_selector"] == "选择问题池"
@@ -32,4 +34,8 @@ def test_ui_copy_uses_chinese_field_labels() -> None:
     assert RESULTS_PAGE["niche_opportunities_title"] == "小平台机会榜"
     assert RESULTS_PAGE["baseline_platforms_title"] == "头部基线平台"
     assert RESULTS_PAGE["golden_set_title"] == "小平台黄金集合"
+    assert "信息熵" in RESULTS_PAGE["score_metric_help"]
+    assert "累计覆盖" in RESULTS_PAGE["golden_set_chart_caption"]
+    assert "排序与分层" in PROMPT_VARIANT_EXPLANATIONS["web_ranked_analysis"]
+    assert "来源显式度" in PROMPT_VARIANT_EXPLANATIONS["web_source_emphasis"]
     assert HOME_PAGE["workflow_steps"][0] == "在“蒸馏问题生成”输入关键词并生成问题池。"

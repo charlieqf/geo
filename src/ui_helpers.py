@@ -7,22 +7,120 @@ def app_css() -> str:
     return """
     <style>
       :root {
-        --bg: #f4f2ef;
-        --ink: #1f1c19;
-        --muted: #6f6a64;
-        --panel: #fbfaf8;
-        --line: #e4dfd8;
-        --accent: #8b7355;
-        --accent-strong: #5d5145;
-        --data-blue: #355c7d;
-        --data-green: #3f776c;
-        --warn: #a35d3b;
+        --bg: #0F171A;
+        --panel: #162028;
+        --ink: #E2E8F0;
+        --muted: #64748B;
+        --line: #334155;
+        --accent: #3B82F6;
+        --accent-strong: #2563EB;
+        --data-green: #10B981;
+        --data-blue: #38BDF8;
+        --warn: #F59E0B;
       }
 
       .stApp {
-        background: radial-gradient(1200px 600px at 10% -10%, #efe7dc 0%, transparent 60%),
-                    radial-gradient(1000px 500px at 90% 0%, #f0ece6 0%, transparent 55%),
-                    var(--bg);
+        background: linear-gradient(160deg, #0F1F2A 0%, #0F171A 60%);
+        color: var(--ink);
+      }
+
+      [data-testid="stSidebar"],
+      [data-testid="stSidebar"] > div:first-child {
+        background: #111B22 !important;
+        border-right: 1px solid var(--line);
+      }
+
+      [data-testid="stSidebarNav"] {
+        background: transparent;
+      }
+
+      [data-testid="stSidebarNav"] a {
+        color: var(--ink) !important;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+      }
+
+      [data-testid="stSidebarNav"] a p,
+      [data-testid="stSidebarNav"] a span,
+      [data-testid="stSidebarNav"] a [data-testid="stMarkdownContainer"] {
+        color: var(--ink) !important;
+        opacity: 1 !important;
+      }
+
+      [data-testid="stSidebarNav"] a:hover {
+        background: rgba(59, 130, 246, 0.12) !important;
+        border-color: rgba(59, 130, 246, 0.28);
+      }
+
+      [data-testid="stSidebarNavLink"][aria-current="page"] {
+        background: rgba(59, 130, 246, 0.18) !important;
+        border-color: rgba(59, 130, 246, 0.36);
+        box-shadow: inset 3px 0 0 var(--accent);
+      }
+
+      [data-testid="stSidebarNavLink"][aria-current="page"] p,
+      [data-testid="stSidebarNavLink"][aria-current="page"] span {
+        color: #F8FAFC !important;
+        font-weight: 600 !important;
+      }
+
+      [data-testid="stButton"] button,
+      [data-testid="baseButton-secondary"] {
+        background: var(--panel) !important;
+        color: var(--ink) !important;
+        border: 1px solid var(--line) !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+      }
+
+      [data-testid="stButton"] button:hover,
+      [data-testid="baseButton-secondary"]:hover {
+        background: rgba(59, 130, 246, 0.12) !important;
+        border-color: rgba(59, 130, 246, 0.32) !important;
+        color: #F8FAFC !important;
+      }
+
+      [data-testid="stButton"] button p,
+      [data-testid="baseButton-secondary"] p,
+      [data-testid="stButton"] button span,
+      [data-testid="baseButton-secondary"] span {
+        color: inherit !important;
+      }
+
+      [data-testid="stExpander"] details {
+        background: var(--panel) !important;
+        border: 1px solid var(--line) !important;
+        border-radius: 8px !important;
+        overflow: hidden;
+      }
+
+      [data-testid="stExpander"] summary {
+        background: rgba(51, 65, 85, 0.45) !important;
+        color: var(--ink) !important;
+        border-bottom: 1px solid rgba(51, 65, 85, 0.35) !important;
+      }
+
+      [data-testid="stExpander"] summary p,
+      [data-testid="stExpander"] summary span,
+      [data-testid="stExpander"] summary svg,
+      [data-testid="stExpander"] details p,
+      [data-testid="stExpander"] details span,
+      [data-testid="stExpander"] details label {
+        color: var(--ink) !important;
+      }
+
+      [data-testid="stExpanderDetails"] {
+        background: transparent !important;
+      }
+
+      .stApp,
+      .stApp .stMarkdown,
+      .stApp .stCaption,
+      .stApp p,
+      .stApp li,
+      .stApp label,
+      .stApp span {
         color: var(--ink);
       }
 
@@ -49,58 +147,77 @@ def app_css() -> str:
       .block-container {
         padding-top: 2rem;
         padding-bottom: 3rem;
-        max-width: 1240px;
+        max-width: 1600px;
       }
 
       [data-testid="stTextInput"] [data-baseweb="base-input"],
       [data-testid="stNumberInput"] [data-baseweb="base-input"] {
-        border: 2px solid rgba(139, 115, 85, 0.55);
-        border-radius: 14px;
-        background: rgba(255,255,255,0.94);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.75), 0 6px 16px rgba(44, 38, 32, 0.05);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: rgba(15, 23, 26, 0.88);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 4px 12px rgba(0, 0, 0, 0.35);
         transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
       }
 
       [data-testid="stTextInput"] [data-baseweb="base-input"]:focus-within,
       [data-testid="stNumberInput"] [data-baseweb="base-input"]:focus-within {
-        border-color: var(--accent-strong);
-        box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.14), 0 10px 22px rgba(44, 38, 32, 0.08);
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18), 0 8px 18px rgba(0, 0, 0, 0.35);
       }
 
       [data-testid="stTextInput"] input,
       [data-testid="stNumberInput"] input {
         background: transparent;
+        color: var(--ink);
       }
 
       [data-testid="stTabs"] [role="tablist"] {
-        gap: 0.35rem;
+        gap: 0.4rem;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 0.2rem;
       }
 
       [data-testid="stTabs"] [role="tab"] {
-        border-radius: 999px;
+        border-radius: 8px 8px 0 0;
         border: 1px solid var(--line);
-        background: rgba(255,255,255,0.7);
+        border-bottom: none;
+        background: rgba(22, 32, 40, 0.94);
         padding-left: 1rem;
         padding-right: 1rem;
+        color: var(--muted);
       }
 
       [data-testid="stTabs"] [aria-selected="true"] {
-        border-color: rgba(139, 115, 85, 0.55);
-        box-shadow: 0 6px 14px rgba(44, 38, 32, 0.06);
+        color: var(--ink);
+        border-color: var(--line);
+        box-shadow: inset 0 -3px 0 var(--accent);
       }
 
       h1, h2, h3 {
-        color: var(--accent-strong);
+        color: var(--ink);
         letter-spacing: 0.01em;
+      }
+
+      a,
+      a:visited {
+        color: var(--data-blue);
+      }
+
+      a:hover {
+        color: var(--accent);
       }
 
       .geo-hero, .geo-card {
         background: var(--panel);
         border: 1px solid var(--line);
-        border-radius: 18px;
+        border-radius: 8px;
         padding: 1.25rem 1.35rem;
-        box-shadow: 0 18px 45px rgba(44, 38, 32, 0.08);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
         margin-bottom: 1rem;
+      }
+
+      .geo-hero {
+        border-left: 3px solid var(--accent);
       }
 
       .geo-hero h1 {
@@ -112,10 +229,11 @@ def app_css() -> str:
       }
 
       .geo-kpi {
-        background: rgba(255,255,255,0.72);
+        background: var(--panel);
         border: 1px solid var(--line);
-        border-radius: 16px;
+        border-radius: 8px;
         padding: 0.9rem 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
       }
 
       .geo-kpi-label {
@@ -131,11 +249,11 @@ def app_css() -> str:
       }
 
       .geo-section-card {
-        background: rgba(255,255,255,0.76);
+        background: var(--panel);
         border: 1px solid var(--line);
-        border-radius: 18px;
+        border-radius: 8px;
         padding: 1rem 1.1rem;
-        box-shadow: 0 12px 28px rgba(44, 38, 32, 0.06);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
         margin-bottom: 1rem;
       }
 
@@ -157,47 +275,47 @@ def app_css() -> str:
         border: 1px solid var(--line);
         border-radius: 999px;
         padding: 0.35rem 0.7rem;
-        background: rgba(255,255,255,0.72);
-        color: var(--accent-strong);
+        background: rgba(15, 23, 26, 0.72);
+        color: var(--muted);
         font-size: 0.88rem;
       }
 
       .geo-question-card {
-        background: rgba(255,255,255,0.82);
+        background: var(--panel);
         border: 1px solid var(--line);
-        border-radius: 16px;
+        border-radius: 8px;
         padding: 0.9rem 1rem;
-        box-shadow: 0 10px 22px rgba(44, 38, 32, 0.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
         margin-bottom: 0.75rem;
       }
 
       .geo-form-shell {
-        background: linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.74) 100%);
+        background: linear-gradient(180deg, rgba(22, 32, 40, 0.96) 0%, rgba(15, 23, 26, 0.92) 100%);
         border: 1px solid var(--line);
-        border-radius: 18px;
+        border-radius: 8px;
         padding: 1rem 1.1rem 0.35rem;
-        box-shadow: 0 12px 28px rgba(44, 38, 32, 0.06);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
         margin-bottom: 1rem;
       }
 
       .geo-question-list-shell {
-        height: calc(100vh - 23rem);
+        height: clamp(400px, calc(100vh - 16rem), 900px);
         overflow-y: auto;
         overflow-x: hidden;
         padding-right: 0.2rem;
       }
 
       .geo-question-list-shell::-webkit-scrollbar {
-        width: 10px;
+        width: 4px;
       }
 
       .geo-question-list-shell::-webkit-scrollbar-thumb {
-        background: rgba(139, 115, 85, 0.35);
+        background: var(--line);
         border-radius: 999px;
       }
 
       .geo-question-list-shell::-webkit-scrollbar-track {
-        background: rgba(228, 223, 216, 0.35);
+        background: rgba(51, 65, 85, 0.18);
         border-radius: 999px;
       }
 
@@ -228,29 +346,126 @@ def app_css() -> str:
         font-weight: 700;
       }
 
-      .geo-status-pending { color: #7d746c; }
-      .geo-status-running { color: #355c7d; }
-      .geo-status-completed { color: #3f776c; }
-      .geo-status-error { color: #a35d3b; }
+      .geo-status-pending { color: var(--muted); }
+      .geo-status-running { color: var(--data-blue); }
+      .geo-status-completed { color: var(--data-green); }
+      .geo-status-error { color: var(--warn); }
 
       .geo-answer-block {
-        background: rgba(255,255,255,0.7);
+        background: #0A1A20;
         border: 1px solid var(--line);
-        border-radius: 14px;
+        border-radius: 8px;
         padding: 0.8rem 0.9rem;
         margin-bottom: 0.7rem;
       }
 
       .geo-answer-label {
-        color: var(--accent-strong);
+        color: var(--data-blue);
         font-weight: 700;
         margin-bottom: 0.35rem;
       }
 
       .geo-answer-text {
-        color: var(--ink);
+        color: var(--data-green);
         white-space: pre-wrap;
         line-height: 1.7;
+      }
+
+      [data-testid="stAlert"] {
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        color: var(--ink);
+      }
+
+      [data-testid="stAlert"] [data-testid^="stMarkdownContainer"] p {
+        color: var(--ink);
+      }
+
+      [data-testid="stAlert"]:has([data-testid="stAlertContentInfo"]) {
+        background: rgba(59, 130, 246, 0.12);
+        border-color: rgba(59, 130, 246, 0.3);
+      }
+
+      [data-testid="stAlert"]:has([data-testid="stAlertContentSuccess"]) {
+        background: rgba(16, 185, 129, 0.12);
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+
+      [data-testid="stAlert"]:has([data-testid="stAlertContentWarning"]) {
+        background: rgba(245, 158, 11, 0.12);
+        border-color: rgba(245, 158, 11, 0.3);
+      }
+
+      [data-testid="stAlert"]:has([data-testid="stAlertContentError"]) {
+        background: rgba(239, 68, 68, 0.12);
+        border-color: rgba(239, 68, 68, 0.3);
+      }
+
+      [data-testid="stCodeBlock"] pre,
+      .stCodeBlock pre {
+        background: #0A1A20 !important;
+        color: var(--ink) !important;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      [data-baseweb="popover"] {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        color: var(--ink);
+      }
+
+      div[data-testid="stDataFrame"] {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+        background: var(--panel);
+      }
+
+      div[data-testid="stDataFrame"] [role="grid"] {
+        background: var(--panel);
+        color: var(--ink);
+      }
+
+      div[data-testid="stDataFrame"] [role="columnheader"] {
+        background: #101920 !important;
+        color: var(--ink) !important;
+        border-bottom: 1px solid var(--line) !important;
+      }
+
+      div[data-testid="stDataFrame"] [role="gridcell"] {
+        background: var(--panel) !important;
+        color: var(--ink) !important;
+        border-color: rgba(51, 65, 85, 0.35) !important;
+      }
+
+      div[data-testid="stDataFrame"] [role="row"]:hover [role="gridcell"] {
+        background: rgba(59, 130, 246, 0.08) !important;
+      }
+
+      div[data-testid="stDataFrame"] a {
+        color: var(--data-blue) !important;
+      }
+
+      div[data-testid="stDataFrame"] a:hover {
+        color: var(--accent) !important;
+      }
+
+      div[data-testid="stDataFrame"] a:visited {
+        color: #93C5FD !important;
+      }
+
+      div[data-testid="stDataFrame"] ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+
+      div[data-testid="stDataFrame"] ::-webkit-scrollbar-thumb {
+        background: var(--line);
+      }
+
+      div[data-testid="stDataFrame"] ::-webkit-scrollbar-track {
+        background: rgba(51, 65, 85, 0.18);
       }
     </style>
     """
